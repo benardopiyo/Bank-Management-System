@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insight</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+
+<header>Bank Management System</header>
+
+<div class="container">
+
+    <body>
+        <h2>Request Loan</h2>
+        <form action="/apply-loan" method="post">
+            <label for="amount">Loan Amount:</label>
+            <input type="number" id="amount" name="amount" required><br><br>
+
+            <label for="interest_rate">Interest Rate (%):</label>
+            <input type="number" id="interest_rate" name="interest_rate" step="0.01" required><br><br>
+
+            <label for="repayment_period">Repayment Period (months):</label>
+            <input type="number" id="repayment_period" name="repayment_period" required><br><br>
+
+            <button type="submit">Submit Loan Request</button>
+        </form>
+        <a href="/dashboard">Back to Dashboard</a>
+    </body>
+</div>
+
+<footer>© 2025 <a href="https://github.com/benardopiyo/Bank-Management-System">iLabs</a> | All Rights Reserved</footer>
+
+</html>
