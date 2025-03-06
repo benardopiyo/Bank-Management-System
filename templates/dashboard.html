@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insight</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+
+<header>Bank Management System</header>
+<a href="/logout">Logout</a>
+
+<div class="container">
+    <h2>Insight Bank</h2>
+
+    <h3>Current Balance: <span id="balance">Loading...</span></h3>
+
+    <form action="/deposit" method="post">
+        <input type="number" name="amount" placeholder="Deposit Amount" required>
+        <button type="submit">Deposit</button>
+    </form>
+
+    <form action="/withdraw" method="post">
+        <input type="number" name="amount" placeholder="Withdraw Amount" required>
+        <button type="submit">Withdraw</button>
+    </form>
+
+    <a href="/loan" class="btn">Request Loan</a>
+    <a href="/view-loans" class="btn">View Loans</a>
+
+
+    <!-- <button onclick="checkBalance()">Check Balance</button> -->
+</div>
+
+<footer>© 2025 <a href="https://github.com/benardopiyo/Bank-Management-System">iLabs</a> | All Rights Reserved</footer>
+
+<script>
+    function checkBalance() {
+        fetch('/balance')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("balance").innerText = "KES " + data.balance;
+            })
+            .catch(error => console.error('Error:', error));
+    }
+    checkBalance(); // Load balance on page load
+</script>
+
+</body>
+</html>
