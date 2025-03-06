@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insight</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+
+<header>Bank Management System</header>
+
+<div class="container">
+    <body>
+        <h2>My Loan Requests</h2>
+        <table border="1">
+            <tr>
+                <th>Loan ID</th>
+                <th>Amount</th>
+                <th>Interest Rate</th>
+                <th>Repayment Period (months)</th>
+                <th>Status</th>
+                <th>Created At</th>
+            </tr>
+            {{range .}}
+            <tr>
+                <td>{{.LoanID}}</td>
+                <td>{{.Amount}}</td>
+                <td>{{.InterestRate}}%</td>
+                <td>{{.RepaymentPeriod}}</td>
+                <td>{{.Status}}</td>
+                <td>{{.CreatedAt}}</td>
+            </tr>
+            {{end}}
+        </table>
+        <a href="/dashboard">Back to Dashboard</a>
+    </body>
+</div>
+
+<footer>© 2025 <a href="https://github.com/benardopiyo/Bank-Management-System">iLabs</a> | All Rights Reserved</footer>
+
+</html>
