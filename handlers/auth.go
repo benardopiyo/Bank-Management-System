@@ -27,6 +27,10 @@ func hashPassword(pin string) string {
 
 // Home Page
 func HomePage(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/" {
+		ErrorPage(w, r, http.StatusNotFound, "Not Found")
+		return
+	}
 	tmpl := template.Must(template.ParseFiles("templates/home.html"))
 	tmpl.Execute(w, nil)
 }
@@ -50,14 +54,14 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	confirmPin := hashPassword(r.FormValue("confirm-pin"))
 
 	if pin != confirmPin {
-		http.Error(w, "PINs do not match", http.StatusBadRequest)
+		ErrorPage(w, r, http.StatusBadRequest, "PINs do not match")
 		return
 	}
 
 	var existingUser User
 	err := config.DB.QueryRow("SELECT user_id, name FROM users WHERE user_name=?", username).Scan(&existingUser.ID, &existingUser.Name)
 	if err == nil {
-		http.Error(w, "Username already exists", http.StatusBadRequest)
+		ErrorPage(w, r, http.StatusBadRequest, "Username already exists")
 		return
 	}
 
@@ -72,7 +76,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	}
 	_, err = stmt.Exec(userID, name, username, pin, confirmPin)
 	if err != nil {
-		http.Error(w, "Failed to register", http.StatusInternalServerError)
+		ErrorPage(w, r, http.StatusInternalServerError, "Failed to register")
 		return
 	}
 
@@ -98,7 +102,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	var user User
 	err := config.DB.QueryRow("SELECT user_id, name FROM users WHERE user_name=? AND user_pin=?", username, pin).Scan(&user.ID, &user.Name)
 	if err != nil {
-		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+		ErrorPage(w, r, http.StatusUnauthorized, "Invalid credentials")
 		return
 	}
 

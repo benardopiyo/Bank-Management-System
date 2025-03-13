@@ -8,7 +8,7 @@
 </head>
 <body>
 
-<header>Bank Management System</header>
+<header>Bank Sys</header>
 <a href="/logout">Logout</a>
 
 <div class="container">
@@ -24,6 +24,22 @@
     <form action="/withdraw" method="post">
         <input type="number" name="amount" placeholder="Withdraw Amount" required>
         <button type="submit">Withdraw</button>
+    </form>
+
+    <form action="/repay-loan" method="post">
+        <input type="number" name="repay_amount" placeholder="Repay Loan Amount" required>
+        <button type="submit">Repay Loan</button>
+    </form>
+
+    <form action="/send-money" method="post">
+        <input type="text" name="recipient" placeholder="Recipient Username" required>
+        <input type="number" name="amount" placeholder="Send Amount" required>
+        <button type="submit">Send Money</button>
+    </form>
+
+    <form action="/buy-airtime" method="post">
+        <input type="number" name="amount" placeholder="Airtime Amount" required>
+        <button type="submit">Buy Airtime</button>
     </form>
 
     <a href="/loan" class="btn">Request Loan</a>

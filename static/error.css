@@ -1,0 +1,106 @@
+/* General Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+a {
+    text-decoration: none;
+    color: #007bff;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Header Styles */
+header {
+    background-color: #3498db;
+    color: white;
+    padding: 20px 0;
+}
+
+.logo {
+    display: inline-block;
+}
+
+.logo-link {
+    color: white;
+    font-weight: bold;
+    font-size: 1.5em;
+}
+
+/* Error Container Styles */
+.error-container {
+    text-align: center;
+    padding: 50px 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: auto;
+    max-width: 600px;
+    flex-grow: 1; /* Allow error container to grow */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center vertically */
+}
+
+.error-container h1 {
+    font-size: 3em;
+    color: #e74c3c;
+    margin-bottom: 10px;
+}
+
+.error-code {
+    font-size: 2em;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.error-message {
+    font-size: 1.2em;
+    color: #555;
+    margin-bottom: 30px;
+}
+
+.home-link {
+    background-color: #3498db;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 5px;
+    font-weight: bold;
+    display: inline-block;
+    transition: background-color 0.3s ease;
+}
+
+.home-link:hover {
+    background-color: #2980b9;
+}
+
+/* Footer Styles */
+footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 15px 0;
+}
+
+footer a {
+    color: #3498db;
+}
+
+footer a:hover {
+    color: #2980b9;
+}

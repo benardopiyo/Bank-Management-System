@@ -23,10 +23,13 @@ func Routes() *mux.Router {
 	mux.HandleFunc("/withdraw", handlers.Withdraw).Methods("POST")
 	mux.HandleFunc("/balance", handlers.Balance).Methods("GET")
 
-	// Loan-related routes - FIXED
+	// Loan-related routes
 	mux.HandleFunc("/loan", handlers.LoanPage).Methods("GET")
 	mux.HandleFunc("/apply-loan", handlers.ApplyLoan).Methods("POST")
+	mux.HandleFunc("/repay-loan", handlers.RepayLoan).Methods("POST")
 	mux.HandleFunc("/view-loans", handlers.ViewLoans).Methods("GET")
+	mux.HandleFunc("/send-money", handlers.SendMoney).Methods("POST")
+	mux.HandleFunc("/buy-airtime", handlers.BuyAirtime).Methods("POST")
 
 	// Serve static files
 	staticDir := "/static/"
