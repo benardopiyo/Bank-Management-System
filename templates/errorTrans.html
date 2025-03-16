@@ -3,26 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Error</title>
-    <link rel="stylesheet" href="/static/error.css">
+    <title>Insight</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<header>
-    <div class="container">
-        <div class="logo">
-            <a href="/" class="logo-link">
-                <h1>Bank Sys</h1>
-            </a>
-        </div>
+<body class="bg-gray-900 text-gray-200 min-h-screen flex flex-col justify-center items-center">
+
+<header class="mb-6">
+    <div class="text-center">
+        <a href="/" class="text-4xl font-bold text-green-500 hover:text-green-400 transition-colors">Insight Bank</a>
     </div>
 </header>
-<body>
-    <div class="error-container">
-        <h1>Oops!</h1>
-        <p class="error-code">{{.StatusCode}}</p>
-        <p class="error-message">{{ .Message}}</p>
-        <a href="/dashboard" class="home-link">Back Home</a>
-    </div>
+
+<div class="text-center">
+    <h1 class="text-6xl font-bold mb-4">Oops!</h1>
+    <p class="text-3xl mb-2">{{.StatusCode}}</p>
+    <p class="text-xl mb-6">{{ .Message}}</p>
+    <a href="/dashboard" class="bg-green-500 text-gray-900 px-6 py-3 rounded-full hover:bg-green-400 transition-colors">Back</a>
+</div>
+
+<footer class="text-gray-200 text-center mt-12"> 2025 <a href="https://github.com/benardopiyo/Bank-Management-System" class="text-gray-200 hover:text-gray-100 transition-colors">iLabs</a> | All Rights Reserved</footer>
+
 </body>
-<footer>© 2025 <a href="https://github.com/benardopiyo/Bank-Management-System">iLabs</a> | All Rights Reserved
-</footer>
 </html>

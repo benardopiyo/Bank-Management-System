@@ -4,23 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Insight</title>
-    <link rel="stylesheet" href="/static/styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-gray-900 text-gray-200 min-h-screen flex justify-center items-center">
 
-<header>Bank Sys</header>
+<nav class="bg-gray-800 fixed w-full top-4 px-4 py-2 shadow-md flex justify-between items-center space-x-2 ">
+    <button onclick="window.history.back()" class="bg-green-500 text-gray-900 px-4 py-2 rounded hover:bg-green-400 transition-colors ml-16">Back</button>
+    <a href="/" class="text-4xl font-bold text-green-500 hover:text-green-400 transition-colors">
+        <span class="text-xl">Insight Bank</span>
+      </a>
+</nav>
 
-<div class="container">
-    <h2>Insight Bank</h2>
-    <form method="POST" action="/login">
-        <label>Username:</label>
-        <input type="text" name="user-name" placeholder="enter your username" required>
-        <label>PIN:</label>
-        <input type="password" name="pin" placeholder="enter your pin" required>
-        <button type="submit">Login</button>
+<div class="container max-w-md mx-auto p-8 bg-gray-800 rounded-lg shadow-lg">
+    <form method="POST" action="/login" class="space-y-4">
+        <div>
+            <label class="block mb-1">Username</label>
+            <input type="text" name="user-name" placeholder="Enter your username" required class="w-full px-4 py-2 rounded bg-gray-700 border-none">
+        </div>
+        <div>
+            <label class="block mb-1">Pin</label>
+            <input type="password" name="pin" placeholder="Enter your pin" required class="w-full px-4 py-2 rounded bg-gray-700 border-none">
+        </div>
+        <button type="submit" class="w-full bg-green-500 text-gray-900 px-4 py-2 rounded hover:bg-green-400 transition-colors">Login</button>
     </form>
 </div>
 
-<footer>© 2025 <a href="https://github.com/benardopiyo/Bank-Management-System">iLabs</a> | All Rights Reserved</footer>
+<footer class="text-gray-200 text-center mt-6 fixed bottom-0 left-0 w-full bg-gray-900"> 2025 <a href="https://github.com/benardopiyo/Bank-Management-System" class="text-gray-200 hover:text-gray-100 transition-colors">iLabs</a> | All Rights Reserved</footer>
 </body>
 </html>
