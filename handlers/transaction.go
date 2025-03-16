@@ -9,19 +9,9 @@ import (
 	"strconv"
 )
 
-// Fetch user's UUID from the database using their username/email
-func getUserID(username string) (string, error) {
-	var userID string
-	err := config.DB.QueryRow("SELECT id FROM users WHERE username = ?", username).Scan(&userID)
-	if err == sql.ErrNoRows {
-		return "", nil // No user found
-	}
-	return userID, err
-}
-
 func fetchUserID(username string) (string, error) {
 	var userID string
-	err := config.DB.QueryRow("SELECT user_id FROM users WHERE username = ?", username).Scan(&userID)
+	err := config.DB.QueryRow("SELECT user_id FROM users WHERE user_name = ?", username).Scan(&userID)
 	if err == sql.ErrNoRows {
 		return "", nil // No user found
 	}
@@ -112,7 +102,6 @@ func Withdraw(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 }
 
-
 func SendMoney(w http.ResponseWriter, r *http.Request) {
 	userID, err := getUserIDFromSession(r)
 	if err != nil || userID == "" {
@@ -121,18 +110,17 @@ func SendMoney(w http.ResponseWriter, r *http.Request) {
 	}
 
 	recipientID, err := fetchUserID(r.FormValue("recipient"))
-	fmt.Println("recipientID:", recipientID)
+	fmt.Println("Recipient ID:", recipientID)
 	if err != nil || recipientID == "" {
 		ErrorPageTrans(w, r, http.StatusBadRequest, "Invalid recipient")
 		return
 	}
-	
+
 	amount, err := strconv.Atoi(r.FormValue("amount"))
 	if err != nil || amount <= 0 {
 		ErrorPageTrans(w, r, http.StatusBadRequest, "Invalid amount")
 		return
 	}
-
 
 	balance, err := getBalance(userID)
 	if err != nil {
@@ -203,7 +191,7 @@ func BuyAirtime(w http.ResponseWriter, r *http.Request) {
 		ErrorPage(w, r, http.StatusInternalServerError, "Database error")
 		return
 	}
-	defer stmt.Close()	
+	defer stmt.Close()
 
 	_, err = stmt.Exec(userID, amount)
 	if err != nil {
@@ -213,6 +201,7 @@ func BuyAirtime(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 }
+
 // Balance function
 func Balance(w http.ResponseWriter, r *http.Request) {
 	userID, err := getUserIDFromSession(r)
