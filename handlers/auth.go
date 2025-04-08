@@ -4,6 +4,7 @@ import (
 	"Bank-Management-System/config"
 	"crypto/sha256"
 	"encoding/hex"
+	"fmt"
 	"html/template"
 	"net/http"
 	"time"
@@ -14,9 +15,12 @@ import (
 // User struct in JSON format
 type User struct {
 	ID       string `json:"id"`
+	UserID   string `json:"user_id"`
 	Name     string `json:"name"`
 	Username string `json:"username"`
-	PIN      string `json:"-"`
+	UserPin  string `json:"user_pin"`
+	ConfirmPin string `json:"confirm_pin"`
+	CreatedAt string `json:"created_at"`
 }
 
 // Hash password
@@ -59,13 +63,14 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var existingUser User
-	err := config.DB.QueryRow("SELECT user_id, name FROM users WHERE user_name=?", username).Scan(&existingUser.ID, &existingUser.Name)
+	err := config.DB.QueryRow("SELECT user_id, user_name FROM users WHERE user_name=?", username).Scan(&existingUser.ID, &existingUser.Name)
 	if err == nil {
 		ErrorPage(w, r, http.StatusBadRequest, "Username already exists")
 		return
 	}
 
 	userID := uuid.New().String()
+	fmt.Println("user_id:", userID)
 	stmt, err := config.DB.Prepare(`
 		INSERT INTO users (user_id, name, user_name, user_pin, confirm_pin, created_at) 
 		VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
@@ -80,6 +85,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	fmt.Println("User registered successfully")
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
 
@@ -100,7 +106,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	pin := hashPassword(r.FormValue("pin"))
 
 	var user User
-	err := config.DB.QueryRow("SELECT user_id, name FROM users WHERE user_name=? AND user_pin=?", username, pin).Scan(&user.ID, &user.Name)
+	err := config.DB.QueryRow("SELECT user_id, user_name FROM users WHERE user_name=? AND user_pin=?", username, pin).Scan(&user.ID, &user.Name)
 	if err != nil {
 		ErrorPage(w, r, http.StatusUnauthorized, "Invalid credentials")
 		return

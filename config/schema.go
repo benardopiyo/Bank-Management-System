@@ -44,6 +44,15 @@ func CreateTables() {
 		FOREIGN KEY(user_id) REFERENCES users(user_id)
 	);`
 
+	savingsTable := `CREATE TABLE IF NOT EXISTS savings (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		user_id TEXT NOT NULL,
+		savings_id TEXT NOT NULL UNIQUE,
+		amount INTEGER NOT NULL,
+		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+		FOREIGN KEY(user_id) REFERENCES users(user_id)
+	);`
+
 	_, err := DB.Exec(usersTable)
 	if err != nil {
 		log.Fatal("Error creating users table:", err)
@@ -62,6 +71,11 @@ func CreateTables() {
 	_, err = DB.Exec(loansTable)
 	if err != nil {
 		log.Fatal("Error creating loans table:", err)
+	}
+
+	_, err = DB.Exec(savingsTable)
+	if err != nil {
+		log.Fatal("Error creating savings table:", err)
 	}
 
 	fmt.Println("Tables created successfully.")

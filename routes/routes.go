@@ -30,6 +30,7 @@ func Routes() *mux.Router {
 	mux.HandleFunc("/view-loans", handlers.ViewLoans).Methods("GET")
 	mux.HandleFunc("/send-money", handlers.SendMoney).Methods("POST")
 	mux.HandleFunc("/buy-airtime", handlers.BuyAirtime).Methods("POST")
+	mux.HandleFunc("/saving", handlers.Saving).Methods("POST")
 
 	// Serve static files
 	staticDir := "/static/"

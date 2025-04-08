@@ -202,6 +202,59 @@ func BuyAirtime(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 }
 
+func Saving(w http.ResponseWriter, r *http.Request) {
+	userID, err := getUserIDFromSession(r)
+	if err != nil || userID == "" {
+		ErrorPage(w, r, http.StatusUnauthorized, "User not authenticated")
+		return
+	}
+
+	amount, err := strconv.Atoi(r.FormValue("amount"))
+	if err != nil || amount <= 0 {
+		ErrorPageTrans(w, r, http.StatusBadRequest, "Invalid amount")
+		return
+	}
+
+	balance, err := getBalance(userID)
+	if err != nil {
+		ErrorPage(w, r, http.StatusInternalServerError, "Database error")
+		return
+	}
+
+	if balance < amount {
+		ErrorPageTrans(w, r, http.StatusBadRequest, "Insufficient funds")
+		return
+	}
+
+	stmt, err := config.DB.Prepare("INSERT INTO transactions (user_id, type, amount) VALUES (?, 'saving', ?)")
+	if err != nil {
+		ErrorPage(w, r, http.StatusInternalServerError, "Database error")
+		return
+	}
+	defer stmt.Close()
+
+	stmt2, err := config.DB.Prepare("INSERT INTO savings (user_id, amount) VALUES (?, ?)")
+	if err != nil {
+		ErrorPage(w, r, http.StatusInternalServerError, "Database error")
+		return
+	}
+	defer stmt2.Close()
+
+	_, err = stmt.Exec(userID, amount)
+	if err != nil {
+		ErrorPage(w, r, http.StatusInternalServerError, "Failed to save")
+		return
+	}
+
+	_, err = stmt2.Exec(userID, amount)
+	if err != nil {
+		ErrorPage(w, r, http.StatusInternalServerError, "Failed to save22")
+		return
+	}
+
+	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+}
+
 // Balance function
 func Balance(w http.ResponseWriter, r *http.Request) {
 	userID, err := getUserIDFromSession(r)
