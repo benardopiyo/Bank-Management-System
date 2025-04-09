@@ -85,7 +85,6 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("User registered successfully")
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
 

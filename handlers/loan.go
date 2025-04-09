@@ -34,8 +34,8 @@ func ApplyLoan(w http.ResponseWriter, r *http.Request) {
 	}
 
 	amount, err := strconv.Atoi(r.FormValue("amount"))
-	if err != nil || amount <= 500 {
-		ErrorPageTrans(w, r, http.StatusBadRequest, "Minimum loan amount is Ksh.500")
+	if err != nil || amount <= 1000 {
+		ErrorPageTrans(w, r, http.StatusBadRequest, "Minimum loan amount is Ksh.1000")
 		return
 	}
 
