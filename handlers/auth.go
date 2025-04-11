@@ -11,8 +11,10 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
+	"github.com/go-resty/resty/v2"
 	"github.com/google/uuid"
 )
 
@@ -27,6 +29,14 @@ type User struct {
 	CreatedAt  string `json:"created_at"`
 }
 
+// CustomerProfile struct for displaying customer details
+type CustomerProfile struct {
+	Name          string
+	Username      string
+	AccountNumber string
+	PhotoPath     string
+}
+
 // Predefined branch codes
 var branchCodes = map[string]string{
 	"Nairobi": "001",
@@ -35,6 +45,14 @@ var branchCodes = map[string]string{
 	"Nakuru":  "004",
 }
 
+// Face++ API credentials and endpoints
+const (
+	facePlusPlusAPIKey     = "dX54O0lbt6ViV3q17fYdmDUXFbVSuf_V"
+	facePlusPlusAPISecret  = "OtqRgnOLTk8jX90oALcuFPSwVMus6BPt"
+	facePlusPlusCompareURL = "https://api-us.faceplusplus.com/facepp/v3/compare"
+	facePlusPlusOCRURL     = "https://api-us.faceplusplus.com/facepp/v3/ocr/idcard"
+)
+
 // GenerateAccountNumber creates a unique account number
 func GenerateAccountNumber(branch string) (string, error) {
 	branchCode, ok := branchCodes[branch]
@@ -42,16 +60,14 @@ func GenerateAccountNumber(branch string) (string, error) {
 		return "", fmt.Errorf("invalid branch: %s", branch)
 	}
 
-	// Get the latest account sequence for the branch
 	var lastSeq int
 	err := config.DB.QueryRow("SELECT COALESCE(MAX(CAST(SUBSTR(account_number, 6) AS INTEGER)), 0) FROM users WHERE branch = ?", branch).Scan(&lastSeq)
 	if err != nil {
 		return "", err
 	}
 
-	// Increment sequence and format (e.g., 00101 + 000001 = 00101000001)
 	seq := lastSeq + 1
-	accountNumber := fmt.Sprintf("%s01%06d", branchCode, seq) // 01 = Account Type (e.g., savings)
+	accountNumber := fmt.Sprintf("%s01%06d", branchCode, seq)
 	return accountNumber, nil
 }
 
@@ -77,15 +93,14 @@ func RegisterPage(w http.ResponseWriter, r *http.Request) {
 	tmpl.Execute(w, nil)
 }
 
-// Register User
+// Register User with Face++ Verification and ID Authenticity
 func Register(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Redirect(w, r, "/register", http.StatusSeeOther)
 		return
 	}
 
-	// Parse multipart form for file uploads
-	err := r.ParseMultipartForm(10 << 20) // 10 MB max
+	err := r.ParseMultipartForm(10 << 20)
 	if err != nil {
 		ErrorPage(w, r, http.StatusBadRequest, "Failed to parse form")
 		return
@@ -109,14 +124,12 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Generate account number
 	accountNumber, err := GenerateAccountNumber(branch)
 	if err != nil {
 		ErrorPage(w, r, http.StatusInternalServerError, "Failed to generate account number")
 		return
 	}
 
-	// Handle photo and ID uploads
 	photoFile, photoHeader, err := r.FormFile("photo")
 	var photoPath string
 	if err == nil {
@@ -141,19 +154,84 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	client := resty.New()
+
+	respCompare, err := client.R().
+		SetFormData(map[string]string{
+			"api_key":    facePlusPlusAPIKey,
+			"api_secret": facePlusPlusAPISecret,
+		}).
+		SetFiles(map[string]string{
+			"image_file1": photoPath,
+			"image_file2": idPath,
+		}).
+		Post(facePlusPlusCompareURL)
+
+	faceMatch := false
+	if err != nil {
+		fmt.Println("Face++ Compare API error:", err)
+	} else {
+		var result struct {
+			Confidence float64 `json:"confidence"`
+			Thresholds struct {
+				E5 float64 `json:"1e-5"`
+			} `json:"thresholds"`
+		}
+		err = json.Unmarshal(respCompare.Body(), &result)
+		if err == nil && result.Confidence > result.Thresholds.E5 {
+			faceMatch = true
+		}
+	}
+
+	respOCR, err := client.R().
+		SetFormData(map[string]string{
+			"api_key":    facePlusPlusAPIKey,
+			"api_secret": facePlusPlusAPISecret,
+		}).
+		SetFiles(map[string]string{
+			"image_file": idPath,
+		}).
+		Post(facePlusPlusOCRURL)
+
+	var idName string
+	nameMatch := false
+	if err != nil {
+		fmt.Println("Face++ OCR API error:", err)
+	} else {
+		var ocrResult struct {
+			Cards []struct {
+				Name string `json:"name"`
+			} `json:"cards"`
+		}
+		err = json.Unmarshal(respOCR.Body(), &ocrResult)
+		if err == nil && len(ocrResult.Cards) > 0 {
+			idName = ocrResult.Cards[0].Name
+			nameMatch = strings.TrimSpace(strings.ToLower(idName)) == strings.TrimSpace(strings.ToLower(name))
+		}
+	}
+
+	autoStatus := "pending"
+	if faceMatch && nameMatch {
+		autoStatus = "verified"
+	} else if !faceMatch || !nameMatch {
+		autoStatus = "failed"
+	}
+
 	userID := uuid.New().String()
 	stmt, err := config.DB.Prepare(`
-		INSERT INTO users (user_id, name, user_name, user_pin, confirm_pin, account_number, branch, photo_path, id_path, verification_status, created_at) 
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', CURRENT_TIMESTAMP)`)
+		INSERT INTO users (user_id, name, user_name, user_pin, confirm_pin, account_number, branch, photo_path, id_path, verification_status, auto_verification_status, created_at) 
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, CURRENT_TIMESTAMP)`)
 	if err != nil {
 		http.Error(w, "Database error", http.StatusInternalServerError)
 		return
 	}
-	_, err = stmt.Exec(userID, name, username, pin, confirmPin, accountNumber, branch, photoPath, idPath)
+	_, err = stmt.Exec(userID, name, username, pin, confirmPin, accountNumber, branch, photoPath, idPath, autoStatus)
 	if err != nil {
 		ErrorPage(w, r, http.StatusInternalServerError, "Failed to register")
 		return
 	}
+
+	fmt.Printf("User: %s, ID Name: %s, Face Match: %v, Name Match: %v, Auto Status: %s\n", name, idName, faceMatch, nameMatch, autoStatus)
 
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
@@ -204,10 +282,8 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		Path:     "/",
 	})
 
-	// Store session mapping to user UUID
 	config.DB.Exec("INSERT INTO sessions (session_token, user_id, expires_at) VALUES (?, ?, ?)", sessionToken, user.ID, expiration)
 
-	// Redirect based on role
 	if role == "admin" {
 		http.Redirect(w, r, "/admin", http.StatusSeeOther)
 	} else {
@@ -233,7 +309,7 @@ func isAuthenticated(r *http.Request) bool {
 	return err == nil && cookie.Value != ""
 }
 
-// Protected Dashboard
+// Protected Dashboard with Customer Profile
 func Dashboard(w http.ResponseWriter, r *http.Request) {
 	if !isAuthenticated(r) {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
@@ -260,10 +336,22 @@ func Dashboard(w http.ResponseWriter, r *http.Request) {
 		ErrorPage(w, r, http.StatusForbidden, "Your account verification was not approved. Kindly review your submitted information and reapply.")
 		return
 	}
-	
+
+	// Fetch customer profile data
+	var profile CustomerProfile
+	err = config.DB.QueryRow("SELECT name, user_name, account_number, photo_path FROM users WHERE user_id = ?", userID).
+		Scan(&profile.Name, &profile.Username, &profile.AccountNumber, &profile.PhotoPath)
+	if err != nil {
+		ErrorPage(w, r, http.StatusInternalServerError, "Failed to fetch profile")
+		return
+	}
 
 	tmpl := template.Must(template.ParseFiles("templates/dashboard.html"))
-	tmpl.Execute(w, nil)
+	err = tmpl.Execute(w, profile)
+	if err != nil {
+		ErrorPage(w, r, http.StatusInternalServerError, "Template rendering error")
+		return
+	}
 }
 
 // Middleware: Get user ID from session
@@ -326,10 +414,10 @@ func AdminOnly(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-// AdminDashboard displays pending users
+// AdminDashboard displays pending users with auto verification status
 func AdminDashboard(w http.ResponseWriter, r *http.Request) {
 	rows, err := config.DB.Query(`
-		SELECT user_id, name, user_name, account_number, branch, photo_path, id_path 
+		SELECT user_id, name, user_name, account_number, branch, photo_path, id_path, auto_verification_status 
 		FROM users WHERE verification_status = 'pending'`)
 	if err != nil {
 		ErrorPage(w, r, http.StatusInternalServerError, "Database error")
@@ -338,19 +426,20 @@ func AdminDashboard(w http.ResponseWriter, r *http.Request) {
 	defer rows.Close()
 
 	type PendingUser struct {
-		UserID        string
-		Name          string
-		Username      string
-		AccountNumber string
-		Branch        string
-		PhotoPath     string
-		IDPath        string
+		UserID                 string
+		Name                   string
+		Username               string
+		AccountNumber          string
+		Branch                 string
+		PhotoPath              string
+		IDPath                 string
+		AutoVerificationStatus string
 	}
 
 	var pendingUsers []PendingUser
 	for rows.Next() {
 		var user PendingUser
-		err := rows.Scan(&user.UserID, &user.Name, &user.Username, &user.AccountNumber, &user.Branch, &user.PhotoPath, &user.IDPath)
+		err := rows.Scan(&user.UserID, &user.Name, &user.Username, &user.AccountNumber, &user.Branch, &user.PhotoPath, &user.IDPath, &user.AutoVerificationStatus)
 		if err != nil {
 			ErrorPage(w, r, http.StatusInternalServerError, "Database error")
 			return
@@ -358,8 +447,14 @@ func AdminDashboard(w http.ResponseWriter, r *http.Request) {
 		pendingUsers = append(pendingUsers, user)
 	}
 
+	fmt.Printf("Pending users: %+v\n", pendingUsers)
+
 	tmpl := template.Must(template.ParseFiles("templates/admin_dashboard.html"))
-	tmpl.Execute(w, pendingUsers)
+	err = tmpl.Execute(w, pendingUsers)
+	if err != nil {
+		ErrorPage(w, r, http.StatusInternalServerError, "Template rendering error")
+		return
+	}
 }
 
 // ApproveUser updates verification status

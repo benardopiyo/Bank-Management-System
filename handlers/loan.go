@@ -9,15 +9,34 @@ import (
 	"github.com/google/uuid"
 )
 
-// LoanPage renders the loan application form
+// LoanPage renders the loan application form with customer profile
 func LoanPage(w http.ResponseWriter, r *http.Request) {
 	if !isAuthenticated(r) {
 		ErrorPage(w, r, http.StatusUnauthorized, "You must be logged in to apply for a loan")
 		return
 	}
 
+	userID, err := getUserIDFromSession(r)
+	if err != nil {
+		ErrorPage(w, r, http.StatusUnauthorized, "Invalid session")
+		return
+	}
+
+	// Fetch customer profile
+	var profile CustomerProfile
+	err = config.DB.QueryRow("SELECT name, user_name, account_number, photo_path FROM users WHERE user_id = ?", userID).
+		Scan(&profile.Name, &profile.Username, &profile.AccountNumber, &profile.PhotoPath)
+	if err != nil {
+		ErrorPage(w, r, http.StatusInternalServerError, "Failed to fetch profile")
+		return
+	}
+
 	tmpl := template.Must(template.ParseFiles("templates/loan.html"))
-	tmpl.Execute(w, nil)
+	err = tmpl.Execute(w, profile)
+	if err != nil {
+		ErrorPage(w, r, http.StatusInternalServerError, "Template rendering error")
+		return
+	}
 }
 
 // ApplyLoan allows users to request a loan
@@ -82,7 +101,7 @@ func ApplyLoan(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 }
 
-// ViewLoans fetches and displays the user's loans
+// ViewLoans fetches and displays the user's loans with customer profile
 func ViewLoans(w http.ResponseWriter, r *http.Request) {
 	if !isAuthenticated(r) {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
@@ -92,6 +111,15 @@ func ViewLoans(w http.ResponseWriter, r *http.Request) {
 	userID, err := getUserIDFromSession(r)
 	if err != nil || userID == "" {
 		ErrorPage(w, r, http.StatusUnauthorized, "You must be logged in to view your loans")
+		return
+	}
+
+	// Fetch customer profile
+	var profile CustomerProfile
+	err = config.DB.QueryRow("SELECT name, user_name, account_number, photo_path FROM users WHERE user_id = ?", userID).
+		Scan(&profile.Name, &profile.Username, &profile.AccountNumber, &profile.PhotoPath)
+	if err != nil {
+		ErrorPage(w, r, http.StatusInternalServerError, "Failed to fetch profile")
 		return
 	}
 
@@ -125,6 +153,19 @@ func ViewLoans(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
+	// Combine profile and loans into a single data struct
+	data := struct {
+		Profile CustomerProfile
+		Loans   []map[string]interface{}
+	}{
+		Profile: profile,
+		Loans:   loans,
+	}
+
 	tmpl := template.Must(template.ParseFiles("templates/view_loans.html"))
-	tmpl.Execute(w, loans)
+	err = tmpl.Execute(w, data)
+	if err != nil {
+		ErrorPage(w, r, http.StatusInternalServerError, "Template rendering error")
+		return
+	}
 }

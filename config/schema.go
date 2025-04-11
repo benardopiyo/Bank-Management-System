@@ -18,12 +18,11 @@ func CreateTables() {
 		photo_path TEXT,              -- User's selfie
 		id_path TEXT,                 -- ID document
 		verification_status TEXT DEFAULT 'pending',
+		auto_verification_status TEXT DEFAULT 'pending', -- New column for Face++ result
 		role TEXT DEFAULT 'user',
-		jumio_verification_id TEXT,   -- Jumio transaction ID
 		created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 	);`
 
-	// Other tables (transactions, sessions, loans, savings) remain unchanged
 	transactionsTable := `CREATE TABLE IF NOT EXISTS transactions (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		user_id TEXT NOT NULL,
@@ -65,7 +64,6 @@ func CreateTables() {
 	if err != nil {
 		log.Fatal("Error creating users table:", err)
 	}
-	// Execute other table creations...
 	_, err = DB.Exec(transactionsTable)
 	if err != nil {
 		log.Fatal("Error creating transactions table:", err)
