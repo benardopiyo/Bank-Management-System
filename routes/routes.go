@@ -25,7 +25,9 @@ func Routes() *mux.Router {
 	// Admin routes
 	mux.HandleFunc("/admin", handlers.AdminOnly(handlers.AdminDashboard)).Methods("GET")
 	mux.HandleFunc("/approve-user", handlers.AdminOnly(handlers.ApproveUser)).Methods("POST")
-
+	mux.HandleFunc("/admin-loans", handlers.AdminOnly(handlers.AdminLoanDashboard)).Methods("GET")
+	mux.HandleFunc("/approve-loan", handlers.AdminOnly(handlers.ApproveLoan)).Methods("POST")
+	
 	// Transaction routes
 	mux.HandleFunc("/deposit", handlers.Deposit).Methods("POST")
 	mux.HandleFunc("/withdraw", handlers.Withdraw).Methods("POST")

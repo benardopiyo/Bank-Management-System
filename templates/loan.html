@@ -6,13 +6,14 @@
     <title>Insight Loan Request</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <style>
         /* Dynamic Background */
         body {
             background: linear-gradient(-45deg, #1f2937, #374151, #111827, #1f2937);
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
+            font-family: 'Open Sans', sans-serif;
         }
         @keyframes gradientBG {
             0% { background-position: 0% 50%; }
@@ -36,6 +37,8 @@
             transition: all 0.3s;
             min-width: 80px;
             white-space: nowrap;
+            color: #1f2937;
+            font-family: 'Roboto Slab', serif;
         }
         .btn-primary:hover {
             background: linear-gradient(135deg, #059669, #047857);
@@ -58,45 +61,12 @@
 
         /* Typography */
         h1, h2, .nav-title {
-            font-family: 'Roboto Slab', serif; 
-            text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+            font-family: 'Roboto Slab', serif;
+            color: #10b981;
+            font-weight: 700;
         }
-
-        /* Animations */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-pulse-slow {
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.8; }
-        }
-
-        /* Tooltip */
-        .tooltip {
-            position: relative;
-        }
-        .tooltip::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s;
-        }
-        .tooltip:hover::after {
-            opacity: 1;
+        p, label, select, input {
+            font-family: 'Open Sans', sans-serif;
         }
 
         /* Responsive Layout */
@@ -112,20 +82,8 @@
         }
         .content-wrapper {
             flex: 1 0 auto;
-            overflow-y: auto;
             padding: 5rem 1rem 3rem 1rem;
         }
-        .container {
-            max-width: 100%;
-            margin-left: auto;
-            margin-right: auto;
-            padding: 1rem;
-            overflow: hidden; /* Clip shadows within container */
-            position: relative;
-        }
-        @media (min-width: 640px) { .container { max-width: 640px; } } /* Base size: smaller than dashboard */
-        @media (min-width: 768px) { .container { max-width: 720px; } }
-        @media (min-width: 1024px) { .container { max-width: 800px; } }
         footer {
             flex-shrink: 0;
         }
@@ -133,14 +91,13 @@
         /* Form Inputs */
         .form-input {
             background: transparent;
-            border: 1px solid #6b7280; /* Gray-500 */
+            border: 1px solid #6b7280;
             color: white;
             outline: none;
             transition: all 0.3s;
         }
         .form-input:focus {
-            border-color: #10b981; /* Green-500 */
-            ring: 2px solid #10b981;
+            border-color: #10b981;
             box-shadow: 0 0 5px rgba(16, 185, 129, 0.5);
         }
     </style>
@@ -150,13 +107,13 @@
         <!-- Navigation -->
         <nav class="glass fixed w-full top-0 z-50 px-4 py-3 shadow-lg">
             <div class="flex justify-between items-center max-w-7xl mx-auto">
-                <button onclick="window.history.back()" class="btn-primary text-gray-900 px-3 py-2 rounded tooltip text-sm md:text-base md:px-4" data-tooltip="Go Back">
+                <button onclick="window.history.back()" class="btn-primary px-3 py-2 rounded text-sm md:text-base md:px-4">
                     <i class="fas fa-arrow-left mr-1 md:mr-2"></i>Back
                 </button>
                 <a href="/" class="nav-title text-xl md:text-2xl font-bold text-green-400 hover:text-green-300 transition-colors">
                     Insight Bank
                 </a>
-                <a href="/logout" class="btn-primary text-gray-900 px-4 py-2 rounded-full tooltip text-sm md:text-base md:px-6" data-tooltip="Sign Out">
+                <a href="/logout" class="btn-primary px-4 py-2 rounded-full text-sm md:text-base md:px-6">
                     <i class="fas fa-sign-out-alt mr-1 md:mr-2"></i>Logout
                 </a>
             </div>
@@ -164,40 +121,52 @@
 
         <!-- Main Content -->
         <main class="content-wrapper">
-            <div class="container glass rounded-xl shadow-xl">
+            <div class="glass rounded-xl shadow-xl max-w-md mx-auto p-6 md:p-8">
                 <!-- Profile Section -->
-                <div class="glass p-4 md:p-6 rounded-lg mb-6 flex flex-col md:flex-row items-center animate-pulse-slow">
-                    <img src="{{.PhotoPath}}" alt="Profile Photo" class="w-20 h-20 md:w-24 md:h-24 rounded-full mr-0 md:mr-6 mb-4 md:mb-0 border-4 border-green-500 shadow-lg" onerror="this.src='/static/default-photo.jpg';">
-                    <div class="text-center md:text-left">
-                        <h2 class="text-2xl md:text-4xl font-bold text-green-400">{{.Name}}</h2>
-                        <p class="text-gray-300 text-base md:text-lg">Username: <span class="font-semibold">{{.Username}}</span></p>
-                        <p class="text-gray-300 text-base md:text-lg">Account No: <span class="font-semibold">{{.AccountNumber}}</span></p>
-                    </div>
+                <div class="flex flex-col items-center mb-6">
+                    <img src="{{.PhotoPath}}" alt="Profile Photo" class="w-20 h-20 rounded-full mb-4 border-4 border-green-500 shadow-lg" onerror="this.src='/static/default-photo.jpg';">
+                    <h2 class="text-2xl md:text-3xl font-bold text-green-400">{{.Name}}</h2>
+                    <p class="text-gray-300 text-base">Username: <span class="font-semibold">{{.Username}}</span></p>
+                    <p class="text-gray-300 text-base">Account No: <span class="font-semibold">{{.AccountNumber}}</span></p>
                 </div>
 
                 <!-- Loan Form -->
-                <div class="p-4 md:p-6">
-                    <h2 class="text-2xl md:text-3xl font-bold text-green-400 mb-6">Request Loan</h2>
-                    <form action="/apply-loan" method="post" class="space-y-6">
-                        <div>
-                            <label for="amount" class="block mb-2 text-gray-200 text-sm md:text-base">Loan Amount</label>
-                            <input type="number" id="amount" name="amount" required class="form-input w-full px-4 py-2 rounded text-sm md:text-base">
-                        </div>
-                        <div>
-                            <label for="interest_rate" class="block mb-2 text-gray-200 text-sm md:text-base">Interest Rate (%)</label>
-                            <input type="number" id="interest_rate" name="interest_rate" step="0.01" required class="form-input w-full px-4 py-2 rounded text-sm md:text-base">
-                        </div>
-                        <div>
-                            <label for="repayment_period" class="block mb-2 text-gray-200 text-sm md:text-base">Repayment Period (months)</label>
-                            <input type="number" id="repayment_period" name="repayment_period" required class="form-input w-full px-4 py-2 rounded text-sm md:text-base">
-                        </div>
-                        <div class="flex justify-center">
-                            <button type="submit" class="btn-primary text-gray-900 px-6 py-3 rounded-lg text-base md:text-lg font-bold shadow-lg hover:shadow-xl transition-all tooltip" data-tooltip="Submit Request">
-                                <i class="fas fa-hand-holding-usd mr-2"></i>Submit Loan Request
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                <h2 class="text-2xl font-bold text-green-400 mb-6 text-center">Request Loan</h2>
+                <form action="/apply-loan" method="post" enctype="multipart/form-data" class="space-y-6">
+                    <div>
+                        <label for="loan_type" class="block mb-2 text-gray-200 text-sm md:text-base">Loan Type</label>
+                        <select id="loan_type" name="loan_type" required class="form-input w-full px-4 py-2 rounded text-sm md:text-base">
+                            <option value="personal">Personal Loan</option>
+                            <option value="mortgage">Mortgage Loan</option>
+                            <option value="commercial">Commercial Loan</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="amount" class="block mb-2 text-gray-200 text-sm md:text-base">Loan Amount (Ksh)</label>
+                        <input type="number" id="amount" name="amount" min="1000" required class="form-input w-full px-4 py-2 rounded text-sm md:text-base">
+                    </div>
+                    <div>
+                        <label for="interest_rate" class="block mb-2 text-gray-200 text-sm md:text-base">Interest Rate (%)</label>
+                        <input type="number" id="interest_rate" name="interest_rate" step="0.01" min="0" required class="form-input w-full px-4 py-2 rounded text-sm md:text-base">
+                    </div>
+                    <div>
+                        <label for="repayment_period" class="block mb-2 text-gray-200 text-sm md:text-base">Repayment Period (months)</label>
+                        <input type="number" id="repayment_period" name="repayment_period" min="1" required class="form-input w-full px-4 py-2 rounded text-sm md:text-base">
+                    </div>
+                    <div>
+                        <label for="id" class="block mb-2 text-gray-200 text-sm md:text-base">ID Document</label>
+                        <input type="file" id="id" name="id" accept=".pdf,.jpg,.png" required class="form-input w-full px-4 py-2 rounded text-sm md:text-base">
+                    </div>
+                    <div>
+                        <label for="loan_form" class="block mb-2 text-gray-200 text-sm md:text-base">Loan Application Form</label>
+                        <input type="file" id="loan_form" name="loan_form" accept=".pdf,.jpg,.png" required class="form-input w-full px-4 py-2 rounded text-sm md:text-base">
+                    </div>
+                    <div class="flex justify-center">
+                        <button type="submit" class="btn-primary px-6 py-3 rounded-lg text-base md:text-lg font-bold shadow-lg hover:shadow-xl transition-all">
+                            <i class="fas fa-hand-holding-usd mr-2"></i>Submit Loan Request
+                        </button>
+                    </div>
+                </form>
             </div>
         </main>
 

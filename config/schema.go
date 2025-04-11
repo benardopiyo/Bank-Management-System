@@ -15,10 +15,10 @@ func CreateTables() {
 		confirm_pin TEXT NOT NULL,
 		account_number TEXT NOT NULL UNIQUE,
 		branch TEXT NOT NULL,
-		photo_path TEXT,              -- User's selfie
-		id_path TEXT,                 -- ID document
+		photo_path TEXT,
+		id_path TEXT,
 		verification_status TEXT DEFAULT 'pending',
-		auto_verification_status TEXT DEFAULT 'pending', -- New column for Face++ result
+		auto_verification_status TEXT DEFAULT 'pending',
 		role TEXT DEFAULT 'user',
 		created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 	);`
@@ -43,12 +43,28 @@ func CreateTables() {
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		user_id TEXT NOT NULL,
 		loan_id TEXT NOT NULL UNIQUE,
+		loan_type TEXT NOT NULL,              -- e.g., personal, mortgage, commercial
 		amount INTEGER NOT NULL,
 		interest_rate FLOAT NOT NULL,
-		repayment_period INTEGER NOT NULL,
-		status TEXT NOT NULL DEFAULT 'pending',
+		repayment_period INTEGER NOT NULL,    -- In months
+		status TEXT NOT NULL DEFAULT 'pending', -- pending, approved, rejected, disbursed
+		id_path TEXT,                         -- Uploaded ID document
+		loan_form_path TEXT,                  -- Uploaded loan form
+		approved_by TEXT,                     -- Admin user_id who approved
+		approved_at DATETIME,
 		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 		FOREIGN KEY(user_id) REFERENCES users(user_id)
+	);`
+
+	loanRepaymentsTable := `CREATE TABLE IF NOT EXISTS loan_repayments (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		loan_id TEXT NOT NULL,
+		payment_amount INTEGER NOT NULL,
+		due_date DATETIME NOT NULL,
+		paid_amount INTEGER DEFAULT 0,
+		paid_at DATETIME,
+		status TEXT NOT NULL DEFAULT 'pending', -- pending, paid, overdue
+		FOREIGN KEY(loan_id) REFERENCES loans(loan_id)
 	);`
 
 	savingsTable := `CREATE TABLE IF NOT EXISTS savings (
@@ -60,25 +76,12 @@ func CreateTables() {
 		FOREIGN KEY(user_id) REFERENCES users(user_id)
 	);`
 
-	_, err := DB.Exec(usersTable)
-	if err != nil {
-		log.Fatal("Error creating users table:", err)
-	}
-	_, err = DB.Exec(transactionsTable)
-	if err != nil {
-		log.Fatal("Error creating transactions table:", err)
-	}
-	_, err = DB.Exec(sessionsTable)
-	if err != nil {
-		log.Fatal("Error creating sessions table:", err)
-	}
-	_, err = DB.Exec(loansTable)
-	if err != nil {
-		log.Fatal("Error creating loans table:", err)
-	}
-	_, err = DB.Exec(savingsTable)
-	if err != nil {
-		log.Fatal("Error creating savings table:", err)
+	tables := []string{usersTable, transactionsTable, sessionsTable, loansTable, loanRepaymentsTable, savingsTable}
+	for _, table := range tables {
+		_, err := DB.Exec(table)
+		if err != nil {
+			log.Fatalf("Error creating table: %v", err)
+		}
 	}
 
 	fmt.Println("Tables created successfully.")
