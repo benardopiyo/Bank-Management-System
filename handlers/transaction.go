@@ -4,7 +4,6 @@ import (
 	"Bank-Management-System/config"
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 )
@@ -110,7 +109,6 @@ func SendMoney(w http.ResponseWriter, r *http.Request) {
 	}
 
 	recipientID, err := fetchUserID(r.FormValue("recipient"))
-	fmt.Println("Recipient ID:", recipientID)
 	if err != nil || recipientID == "" {
 		ErrorPageTrans(w, r, http.StatusBadRequest, "Invalid recipient")
 		return

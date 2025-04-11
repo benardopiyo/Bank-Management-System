@@ -10,6 +10,7 @@ import (
 func Routes() *mux.Router {
 	mux := mux.NewRouter()
 
+	// public routes
 	mux.HandleFunc("/", handlers.HomePage).Methods("GET")
 	mux.HandleFunc("/register", handlers.RegisterPage).Methods("GET")
 	mux.HandleFunc("/register", handlers.Register).Methods("POST")
@@ -17,8 +18,15 @@ func Routes() *mux.Router {
 	mux.HandleFunc("/login", handlers.Login).Methods("POST")
 	mux.HandleFunc("/logout", handlers.Logout).Methods("GET")
 
-	// Protected Routes
+	// User routes
 	mux.HandleFunc("/dashboard", handlers.Dashboard).Methods("GET")
+	mux.HandleFunc("/account-number", handlers.AccountNumber).Methods("GET")
+
+	// Admin routes
+	mux.HandleFunc("/admin", handlers.AdminOnly(handlers.AdminDashboard)).Methods("GET")
+	mux.HandleFunc("/approve-user", handlers.AdminOnly(handlers.ApproveUser)).Methods("POST")
+
+	// Transaction routes
 	mux.HandleFunc("/deposit", handlers.Deposit).Methods("POST")
 	mux.HandleFunc("/withdraw", handlers.Withdraw).Methods("POST")
 	mux.HandleFunc("/balance", handlers.Balance).Methods("GET")
@@ -33,9 +41,8 @@ func Routes() *mux.Router {
 	mux.HandleFunc("/saving", handlers.Saving).Methods("POST")
 
 	// Serve static files
-	staticDir := "/static/"
-	fs := http.StripPrefix(staticDir, http.FileServer(http.Dir("static")))
-	mux.PathPrefix(staticDir).Handler(fs)
+	mux.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+	mux.PathPrefix("/uploads/").Handler(http.StripPrefix("/uploads/", http.FileServer(http.Dir("uploads"))))
 
 	return mux
 }
