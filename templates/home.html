@@ -3,184 +3,337 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Insight</title>
+    <title>Insight Bank</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <style>
+        /* Custom Variables */
         :root {
             --color-dark: #0A0F15;
             --color-accent: #00C897;
             --color-light: #E5E5E5;
         }
+
+        /* Dynamic Background */
         body {
-            background-color: var(--color-dark);
+            background: linear-gradient(-45deg, #1f2937, #374151, #111827, #1f2937);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
             color: var(--color-light);
+            font-family: 'Open Sans', sans-serif; /* Body text */
         }
-        .bg-dark { background-color: var(--color-dark); }
-        .bg-accent { background-color: var(--color-accent); }
-        .text-accent { color: var(--color-accent); }
-        .hover-accent:hover { color: var(--color-accent); }
-        .card-shadow {
-            box-shadow: 0 8px 32px rgba(0, 200, 151, 0.1);
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Glassmorphism */
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Button Styles */
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981, #059669);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+            min-width: 80px;
+            white-space: nowrap;
+            color: var(--color-dark);
+            font-family: 'Roboto Slab', serif; /* Button text */
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.7);
+        }
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .btn-primary:hover::after {
+            opacity: 1;
+        }
+        .btn-secondary {
+            border: 1px solid var(--color-accent);
+            color: var(--color-accent);
+            transition: all 0.3s;
+            font-family: 'Roboto Slab', serif; /* Button text */
+        }
+        .btn-secondary:hover {
+            background: var(--color-accent);
+            color: var(--color-dark);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.7);
+        }
+
+        /* Typography */
+        h1, h2, h3, .nav-title {
+            font-family: 'Roboto Slab', serif; /* Headings */
+            color: #10b981; /* Green for professionalism */
+        }
+        h1 {
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        h2, h3 {
+            font-weight: 600;
+        }
+        p, li, a {
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+        }
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+        .tooltip:hover::after {
+            opacity: 1;
+        }
+
+        /* Responsive Layout */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        .page-wrapper {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .content-wrapper {
+            flex: 1 0 auto;
+            padding: 5rem 1rem 3rem 1rem;
+        }
+        .container {
+            max-width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 1rem;
+            overflow: hidden;
+            position: relative;
+        }
+        @media (min-width: 640px) { .container { max-width: 640px; } }
+        @media (min-width: 768px) { .container { max-width: 768px; } }
+        @media (min-width: 1024px) { .container { max-width: 1024px; } }
+        @media (min-width: 1280px) { .container { max-width: 1280px; } }
+        footer {
+            flex-shrink: 0;
+        }
+
+        /* Card Styles */
+        .card {
+            transition: transform 0.3s, box-shadow 0.3s;
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
         }
     </style>
 </head>
-<body class="bg-dark min-h-screen">
-    <nav class="bg-dark/50 backdrop-blur-sm fixed w-full top-0 z-50 px-16 py-4">
-        <div class="flex justify-between items-center">
-            <div class="flex items-center">
-                <svg class="w-8 h-8 text-accent mr-2" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                </svg>
-                <span class="text-light text-xl font-bold">Insight</span>
-            </div>
-            <div class="space-x-8">
-                <a href="/" class="text-light hover:text-accent transition-colors">Home</a>
-                <a href="#about" class="text-light hover:text-accent transition-colors">About</a>
-                <a href="#testimony" class="text-light hover:text-accent transition-colors">Features</a>
-                <a href="/register" class="bg-accent text-dark px-6 py-2 rounded-full hover:bg-opacity-90 transition-colors">Register</a>
-                <a href="/login" class="bg-accent text-dark px-6 py-2 rounded-full hover:bg-opacity-90 transition-colors">login</a>
-            </div>
-        </div>
-    </nav>
-
-    <main class="pt-32 px-16 mx-16" style="margin-left: 70px; margin-right: 70px;">
-        <div class="grid grid-cols-2 gap-16 items-center">
-            <div class="space-y-8">
-                <h1 class="text-6xl font-bold leading-tight">
-                    Empowering Your<br>
-                    Financial Journey<br>
-                    With Intelligence
-                </h1>
-                <p class="text-light/80 text-lg">
-                    Experience seamless money and loan management,<br>
-                    accessible from anywhere, anytime, right at your fingertips.
-                </p>
-                <div class="flex space-x-4">
-                    <a href="/register" class="inline-block">
-                        <button class="bg-accent text-dark px-8 py-3 rounded-full hover:bg-opacity-90 transition-colors">
-                            Begin Your Adventure
-                        </button>
+<body>
+    <div class="page-wrapper">
+        <!-- Navigation -->
+        <nav class="glass fixed w-full top-0 z-50 px-4 py-3 shadow-lg">
+            <div class="flex justify-between items-center max-w-7xl mx-auto">
+                <div class="flex items-center">
+                    <svg class="w-8 h-8 text-accent mr-2" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                    </svg>
+                    <a href="/" class="nav-title text-xl md:text-2xl font-bold text-green-400 hover:text-green-300 transition-colors">
+                        Insight Bank
                     </a>
-                    <button class="border border-accent text-accent px-8 py-3 rounded-full hover:bg-accent hover:text-dark transition-colors">
-                        Discover More
-                    </button>
                 </div>
-                <div class="grid grid-cols-3 gap-8 pt-8">
-                    <div class="text-center">
-                        <div class="text-3xl font-bold text-accent">20+</div>
-                        <div class="text-light/60">User Active</div>
-                    </div>
-                    <div class="text-center">
-                        <div class="text-3xl font-bold text-accent">10+</div>
-                        <div class="text-light/60">Partnered Companies</div>
-                    </div>
-                    <div class="text-center">
-                        <div class="text-3xl font-bold text-accent">$280+</div>
-                        <div class="text-light/60">Loans Granted</div>
-                    </div>
+                <div class="flex items-center space-x-4 md:space-x-8">
+                    <a href="/" class="text-gray-200 hover:text-green-400 transition-colors text-sm md:text-base">Home</a>
+                    <a href="#about" class="text-gray-200 hover:text-green-400 transition-colors text-sm md:text-base">About</a>
+                    <a href="#testimony" class="text-gray-200 hover:text-green-400 transition-colors text-sm md:text-base">Features</a>
+                    <a href="/register" class="btn-primary px-4 py-2 rounded-full text-sm md:text-base md:px-6 tooltip" data-tooltip="Sign Up">Register</a>
+                    <a href="/login" class="btn-primary px-4 py-2 rounded-full text-sm md:text-base md:px-6 tooltip" data-tooltip="Sign In">Login</a>
                 </div>
             </div>
-            <div class="relative">
-                <div class="relative z-10">
-                    <img src="/static/illu.jpg" alt="Banking App Interface" class="rounded-lg shadow-2xl">
-                </div>
-                <div class="absolute inset-0 bg-accent/20 blur-3xl -z-10"></div>
-            </div>
-        </div>
+        </nav>
 
-        <section class="py-24">
-            <h2 class="text-3xl font-bold text-center mb-16">Your Financial Peace of Mind, Our Priority</h2>
-            <div class="grid grid-cols-3 gap-8">
-                <div class="bg-dark/50 backdrop-blur-sm p-8 rounded-xl card-shadow">
-                    <div class="bg-accent/10 w-12 h-12 flex items-center justify-center rounded-lg mb-4">
-                        <svg class="w-6 h-6 text-accent" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                        </svg>
+        <!-- Main Content -->
+        <main class="content-wrapper">
+            <div class="container">
+                <!-- Hero Section -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center">
+                    <div class="space-y-6 md:space-y-8">
+                        <h1 class="text-4xl md:text-6xl font-bold leading-tight">
+                            Empowering Your<br>Financial Journey<br>With Intelligence
+                        </h1>
+                        <p class="text-gray-300 text-base md:text-lg">
+                            Experience seamless money and loan management,<br>accessible from anywhere, anytime, right at your fingertips.
+                        </p>
+                        <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                            <a href="/register" class="btn-primary px-6 md:px-8 py-3 rounded-full text-base md:text-lg font-bold tooltip" data-tooltip="Get Started">
+                                Begin Your Adventure
+                            </a>
+                            <button class="btn-secondary px-6 md:px-8 py-3 rounded-full text-base md:text-lg font-bold tooltip" data-tooltip="Learn More">
+                                Discover More
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-3 gap-4 md:gap-8 pt-6 md:pt-8">
+                            <div class="text-center">
+                                <div class="text-2xl md:text-3xl font-bold text-green-400">20+</div>
+                                <div class="text-gray-400 text-sm md:text-base">User Active</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl md:text-3xl font-bold text-green-400">10+</div>
+                                <div class="text-gray-400 text-sm md:text-base">Partnered Companies</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl md:text-3xl font-bold text-green-400">$280+</div>
+                                <div class="text-gray-400 text-sm md:text-base">Loans Granted</div>
+                            </div>
+                        </div>
                     </div>
-                    <h3 class="text-xl font-bold mb-2">Unbreakable Security</h3>
-                    <p class="text-light/60">Fortified encryption ensures your financial data remains confidential and protected.</p>
-                </div>
-                <div class="bg-dark/50 backdrop-blur-sm p-8 rounded-xl card-shadow">
-                    <div class="bg-accent/10 w-12 h-12 flex items-center justify-center rounded-lg mb-4">
-                        <svg class="w-6 h-6 text-accent" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M3 10h18M7 15h1m4 0h1m4 0h1M3 6h18"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-bold mb-2">Borderless Transactions</h3>
-                    <p class="text-light/60">Enjoy fee-free transfers within our global network, connecting you seamlessly.</p>
-                </div>
-                <div class="bg-dark/50 backdrop-blur-sm p-8 rounded-xl card-shadow">
-                    <div class="bg-accent/10 w-12 h-12 flex items-center justify-center rounded-lg mb-4">
-                        <svg class="w-6 h-6 text-accent" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-bold mb-2">Security First</h3>
-                    <p class="text-light/60">Advanced security measures to protect your financial data.</p>
-                </div>
-            </div>
-        </section>
-
-        <section class="py-24">
-            <div class="container mx-auto px-8">
-                <h2 class="text-3xl font-bold text-center mb-16">Manage your Loans with ease</h2>
-                <div class="grid grid-cols-2 gap-16 items-center">
                     <div class="relative">
-                        <img src="/static/ill2.jpg" alt="App Features" class="rounded-lg shadow-2xl">
-                    </div>
-                    <div class="space-y-8">
-                        <h3 class="text-2xl font-bold">What else you can do with Insight features</h3>
-                        <ul class="list-disc list-inside text-light/80">
-                            <li>Instant Deposits and Withdrawals</li>
-                            <li>Track your Loans with detailed analytics</li>
-                            <li>Request for loans</li>
-                            <li>View your loan history</li>
-                        </ul>
+                        <div class="relative z-10">
+                            <img src="/static/illu.jpg" alt="Banking App Interface" class="rounded-lg shadow-2xl w-full">
+                        </div>
+                        <div class="absolute inset-0 bg-green-400/20 blur-3xl -z-10"></div>
                     </div>
                 </div>
-            </div>
-        </section>
 
-        <section class="py-24">
-            <div class="container mx-auto px-8">
-                <h2 class="text-3xl font-bold text-center mb-16">What our happy customers say about Insight Bank</h2>
-                <div class="grid grid-cols-2 gap-8">
-                    <div class="bg-dark/50 backdrop-blur-sm p-12 rounded-xl card-shadow">
-                        <p class="text-light/60">"Insight Bank has transformed the way I handle my finances. The app is intuitive and easy to use."</p>
-                        <div class="mt-4">
-                            <span class="text-accent font-bold">Fena Bobs</span>, Verified User
+                <!-- Features Section -->
+                <section class="py-12 md:py-24">
+                    <h2 class="text-2xl md:text-3xl font-bold text-center mb-12 md:mb-16">Your Financial Peace of Mind, Our Priority</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
+                        <div class="glass p-6 md:p-8 rounded-xl card">
+                            <div class="bg-green-400/10 w-12 h-12 flex items-center justify-center rounded-lg mb-4">
+                                <svg class="w-6 h-6 text-green-400" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                </svg>
+                            </div>
+                            <h3 class="text-lg md:text-xl font-bold mb-2">Unbreakable Security</h3>
+                            <p class="text-gray-300 text-sm md:text-base">Fortified encryption ensures your financial data remains confidential and protected.</p>
+                        </div>
+                        <div class="glass p-6 md:p-8 rounded-xl card">
+                            <div class="bg-green-400/10 w-12 h-12 flex items-center justify-center rounded-lg mb-4">
+                                <svg class="w-6 h-6 text-green-400" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M3 10h18M7 15h1m4 0h1m4 0h1M3 6h18"/>
+                                </svg>
+                            </div>
+                            <h3 class="text-lg md:text-xl font-bold mb-2">Borderless Transactions</h3>
+                            <p class="text-gray-300 text-sm md:text-base">Enjoy fee-free transfers within our global network, connecting you seamlessly.</p>
+                        </div>
+                        <div class="glass p-6 md:p-8 rounded-xl card">
+                            <div class="bg-green-400/10 w-12 h-12 flex items-center justify-center rounded-lg mb-4">
+                                <svg class="w-6 h-6 text-green-400" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                                </svg>
+                            </div>
+                            <h3 class="text-lg md:text-xl font-bold mb-2">Security First</h3>
+                            <p class="text-gray-300 text-sm md:text-base">Advanced security measures to protect your financial data.</p>
                         </div>
                     </div>
-                    <div class="bg-dark/50 backdrop-blur-sm p-12 rounded-xl card-shadow">
-                        <p class="text-light/60">"I love the free transactions and the security features. Insight Bank gives me peace of mind."</p>
-                        <div class="mt-4">
-                            <span class="text-accent font-bold">Kamala Hanks</span>, Verified User
+                </section>
+
+                <!-- Features with Image Section -->
+                <section class="py-12 md:py-24">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center">
+                        <div class="relative">
+                            <img src="/static/ill2.jpg" alt="App Features" class="rounded-lg shadow-2xl w-full">
+                        </div>
+                        <div class="space-y-6 md:space-y-8">
+                            <h3 class="text-2xl md:text-3xl font-bold">What Else You Can Do With Insight Features</h3>
+                            <ul class="list-disc list-inside text-gray-300 text-base md:text-lg">
+                                <li>Instant Deposits and Withdrawals</li>
+                                <li>Track Your Loans with Detailed Analytics</li>
+                                <li>Request for Loans</li>
+                                <li>View Your Loan History</li>
+                            </ul>
                         </div>
                     </div>
+                </section>
+
+                <!-- Testimonials Section -->
+                <section class="py-12 md:py-24">
+                    <h2 class="text-2xl md:text-3xl font-bold text-center mb-12 md:mb-16">What Our Happy Customers Say</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                        <div class="glass p-8 md:p-12 rounded-xl card">
+                            <p class="text-gray-300 text-sm md:text-base">"Insight Bank has transformed the way I handle my finances. The app is intuitive and easy to use."</p>
+                            <div class="mt-4">
+                                <span class="text-green-400 font-bold">Fena Bobs</span>, Verified User
+                            </div>
+                        </div>
+                        <div class="glass p-8 md:p-12 rounded-xl card">
+                            <p class="text-gray-300 text-sm md:text-base">"I love the free transactions and the security features. Insight Bank gives me peace of mind."</p>
+                            <div class="mt-4">
+                                <span class="text-green-400 font-bold">Kamala Hanks</span>, Verified User
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="glass text-gray-200 text-center py-12 w-full">
+            <div class="container">
+                <div class="flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-8 mb-8">
+                    <a href="/" class="text-gray-200 hover:text-green-400 transition-colors">Home</a>
+                    <a href="#about" class="text-gray-200 hover:text-green-400 transition-colors">About</a>
+                </div>
+                <p class="text-gray-400 mb-4">© 2025 Insight Bank. All rights reserved.</p>
+                <div class="flex justify-center space-x-4">
+                    <a href="#" class="text-gray-200 hover:text-green-400 transition-colors">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M24 4.56v15.08c0 2.5-2.02 4.56-4.5 4.56h-15c-2.48 0-4.5-2.06-4.5-4.56v-15.08c0-2.5 2.02-4.56 4.5-4.56h15c2.48 0 4.5 2.06 4.5 4.56zM9.75 19.5h-3v-9h3v9zm-1.5-10.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm12 10.5h-3v-4.5c0-1.1-.9-2-2-2s-2 .9-2 2v4.5h-3v-9h3v1.22c.84-1.16 2.36-1.72 3.78-1.72 2.48 0 4.5 2.02 4.5 4.5v5z"/>
+                        </svg>
+                    </a>
+                    <a href="#" class="text-gray-200 hover:text-green-400 transition-colors">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M24 4.56v15.08c0 2.5-2.02 4.56-4.5 4.56h-15c-2.48 0-4.5-2.06-4.5-4.56v-15.08c0-2.5 2.02-4.56 4.5-4.56h15c2.48 0 4.5 2.06 4.5 4.56zM9.75 19.5h-3v-9h3v9zm-1.5-10.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm12 10.5h-3v-4.5c0-1.1-.9-2-2-2s-2 .9-2 2v4.5h-3v-9h3v1.22c.84-1.16 2.36-1.72 3.78-1.72 2.48 0 4.5 2.02 4.5 4.5v5z"/>
+                        </svg>
+                    </a>
                 </div>
             </div>
-        </section>
+        </footer>
+    </div>
 
-    <footer class="bg-dark py-12 bottom-0 left-0 w-full">
-        <div class="container mx-auto px-8 text-center">
-            <div class="flex justify-center space-x-8 mb-8">
-                <a href="/" class="text-light hover:text-accent transition-colors">Home</a>
-                <a href="#about" class="text-light hover:text-accent transition-colors">About</a>
-            </div>
-            <p class="text-light/60 mb-4">&copy; 2025 Insight Bank. All rights reserved.</p>
-            <div class="flex justify-center space-x-4">
-                <a href="#" class="text-light hover:text-accent transition-colors">
-                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M24 4.56v15.08c0 2.5-2.02 4.56-4.5 4.56h-15c-2.48 0-4.5-2.06-4.5-4.56v-15.08c0-2.5 2.02-4.56 4.5-4.56h15c2.48 0 4.5 2.06 4.5 4.56zM9.75 19.5h-3v-9h3v9zm-1.5-10.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm12 10.5h-3v-4.5c0-1.1-.9-2-2-2s-2 .9-2 2v4.5h-3v-9h3v1.22c.84-1.16 2.36-1.72 3.78-1.72 2.48 0 4.5 2.02 4.5 4.5v5z"/>
-                    </svg>
-                </a>
-                <a href="#" class="text-light hover:text-accent transition-colors">
-                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M24 4.56v15.08c0 2.5-2.02 4.56-4.5 4.56h-15c-2.48 0-4.5-2.06-4.5-4.56v-15.08c0-2.5 2.02-4.56 4.5-4.56h15c2.48 0 4.5 2.06 4.5 4.56zM9.75 19.5h-3v-9h3v9zm-1.5-10.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm12 10.5h-3v-4.5c0-1.1-.9-2-2-2s-2 .9-2 2v4.5h-3v-9h3v1.22c.84-1.16 2.36-1.72 3.78-1.72 2.48 0 4.5 2.02 4.5 4.5v5z"/>
-                    </svg>
-                </a>
-            </div>
-        </div>
-    </footer>
+    <!-- Script for Card Animation Delay -->
+    <script>
+        document.querySelectorAll('.card').forEach((card, index) => {
+            card.style.animationDelay = `${index * 0.1}s`;
+        });
+    </script>
 </body>
 </html>

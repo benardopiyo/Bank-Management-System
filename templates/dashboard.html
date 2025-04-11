@@ -1,122 +1,321 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Insight</title>
+    <title>Insight Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Dynamic Background */
+        body {
+            background: linear-gradient(-45deg, #1f2937, #374151, #111827, #1f2937);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Glassmorphism */
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Reduced spread */
+        }
+
+        /* Card Styles */
+        .card {
+            position: relative;
+            transition: transform 0.3s, box-shadow 0.3s;
+            animation: fadeInUp 0.5s ease-out forwards;
+            min-height: 4rem;
+        }
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3); /* Reduced spread */
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            transition: left 0.4s;
+        }
+        .card:hover::before {
+            left: 100%;
+        }
+
+        /* Button Styles */
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981, #059669);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+            min-width: 80px;
+            white-space: nowrap;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.7); /* Reduced spread */
+        }
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .btn-primary:hover::after {
+            opacity: 1;
+        }
+
+        /* Typography */
+        h1, h2, .nav-title {
+            font-family: 'Roboto Slab', serif;
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-pulse-slow {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+        }
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+        .tooltip:hover::after {
+            opacity: 1;
+        }
+
+        /* Responsive Layout */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        .page-wrapper {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .content-wrapper {
+            flex: 1 0 auto;
+            overflow-y: auto;
+            padding: 5rem 1rem 3rem 1rem;
+        }
+        .container {
+            max-width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 1rem;
+            overflow: hidden; /* Clip shadows within container */
+            position: relative; /* Ensure shadows are contained */
+        }
+        @media (min-width: 640px) { .container { max-width: 640px; } }
+        @media (min-width: 768px) { .container { max-width: 768px; } }
+        @media (min-width: 1024px) { .container { max-width: 1024px; } }
+        @media (min-width: 1280px) { .container { max-width: 1280px; } }
+        footer {
+            flex-shrink: 0;
+        }
+
+        /* Ensure buttons are visible */
+        .form-flex {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .form-flex input {
+            flex: 1 1 auto;
+            min-width: 100px;
+        }
+        .form-flex i {
+            flex-shrink: 0;
+        }
+        .form-flex button {
+            flex-shrink: 0;
+        }
+        @media (max-width: 640px) {
+            .form-flex {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .form-flex input, .form-flex button {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
-
-<body class="bg-gray-900 text-gray-200 min-h-screen flex justify-center items-center">
-
-    <nav class="bg-gray-800 fixed w-full top-0 z-50 px-16 py-4 shadow-lg">
-        <div class="flex justify-between items-center">
-            <div>
-                <button onclick="window.history.back()"
-                    class="bg-green-500 text-gray-900 px-4 py-2 rounded hover:bg-green-400 transition-colors ml-16">Back</button>
-            </div>
-            <div class="flex items-center">
-                <a href="/" class="text-4xl font-bold text-green-500 hover:text-green-400 transition-colors">
-                    <span class="text-xl">Insight Bank</span>
+<body>
+    <div class="page-wrapper">
+        <!-- Navigation -->
+        <nav class="glass fixed w-full top-0 z-50 px-4 py-3 shadow-lg">
+            <div class="flex justify-between items-center max-w-7xl mx-auto">
+                <button onclick="window.history.back()" class="btn-primary text-gray-900 px-3 py-2 rounded tooltip text-sm md:text-base md:px-4" data-tooltip="Go Back">
+                    <i class="fas fa-arrow-left mr-1 md:mr-2"></i>Back
+                </button>
+                <a href="/" class="nav-title text-xl md:text-2xl font-bold text-green-400 hover:text-green-300 transition-colors">
+                    Insight Bank
+                </a>
+                <a href="/logout" class="btn-primary text-gray-900 px-4 py-2 rounded-full tooltip text-sm md:text-base md:px-6" data-tooltip="Sign Out">
+                    <i class="fas fa-sign-out-alt mr-1 md:mr-2"></i>Logout
                 </a>
             </div>
-            <div>
-                <a href="/"
-                    class="bg-green-500 text-gray-900 px-6 py-2 rounded-full hover:bg-green-400 transition-colors">Logout</a>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="content-wrapper">
+            <div class="container glass rounded-xl shadow-xl">
+                <!-- Profile Section -->
+                <div class="glass p-4 md:p-6 rounded-lg mb-6 flex flex-col md:flex-row items-center animate-pulse-slow">
+                    <img src="{{.PhotoPath}}" alt="Profile Photo" class="w-20 h-20 md:w-24 md:h-24 rounded-full mr-0 md:mr-6 mb-4 md:mb-0 border-4 border-green-500 shadow-lg" onerror="this.src='/static/default-photo.jpg';">
+                    <div class="text-center md:text-left">
+                        <h2 class="text-2xl md:text-4xl font-bold text-green-400">{{.Name}}</h2>
+                        <p class="text-gray-300 text-base md:text-lg">Username: <span class="font-semibold">{{.Username}}</span></p>
+                        <p class="text-gray-300 text-base md:text-lg">Account No: <span class="font-semibold">{{.AccountNumber}}</span></p>
+                    </div>
+                    <div class="mt-4 md:mt-0 md:ml-auto text-center md:text-right">
+                        <p class="text-xl md:text-2xl font-bold text-green-400">KES <span id="balance">Loading...</span></p>
+                        <p class="text-xs md:text-sm text-gray-400">Available Balance</p>
+                    </div>
+                </div>
+
+                <!-- Actions Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                    <!-- Deposit -->
+                    <div class="card glass p-3 md:p-4 rounded-lg">
+                        <form action="/deposit" method="post" class="form-flex">
+                            <i class="fas fa-arrow-down text-green-400 text-xl md:text-2xl"></i>
+                            <input type="number" name="amount" placeholder="Deposit Amount" required class="px-3 py-2 rounded bg-transparent border border-gray-500 text-white focus:ring-2 focus:ring-green-400 text-sm md:text-base">
+                            <button type="submit" class="btn-primary text-gray-900 px-3 py-2 rounded tooltip text-sm md:text-base md:px-4" data-tooltip="Add Funds">Deposit</button>
+                        </form>
+                    </div>
+
+                    <!-- Withdraw -->
+                    <div class="card glass p-3 md:p-4 rounded-lg">
+                        <form action="/withdraw" method="post" class="form-flex">
+                            <i class="fas fa-arrow-up text-red-400 text-xl md:text-2xl"></i>
+                            <input type="number" name="amount" placeholder="Withdraw Amount" required class="px-3 py-2 rounded bg-transparent border border-gray-500 text-white focus:ring-2 focus:ring-green-400 text-sm md:text-base">
+                            <button type="submit" class="btn-primary text-gray-900 px-3 py-2 rounded tooltip text-sm md:text-base md:px-4" data-tooltip="Take Funds">Withdraw</button>
+                        </form>
+                    </div>
+
+                    <!-- Send Money -->
+                    <div class="card glass p-3 md:p-4 rounded-lg">
+                        <form action="/send-money" method="post" class="space-y-2 md:space-y-3">
+                            <div class="form-flex">
+                                <i class="fas fa-paper-plane text-blue-400 text-xl md:text-2xl"></i>
+                                <input type="text" name="recipient" placeholder="Recipient Username" required class="px-3 py-2 rounded bg-transparent border border-gray-500 text-white focus:ring-2 focus:ring-green-400 text-sm md:text-base">
+                            </div>
+                            <div class="form-flex">
+                                <i class="fas fa-money-bill-wave text-green-400 text-xl md:text-2xl"></i>
+                                <input type="number" name="amount" placeholder="Send Amount" required class="px-3 py-2 rounded bg-transparent border border-gray-500 text-white focus:ring-2 focus:ring-green-400 text-sm md:text-base">
+                                <button type="submit" class="btn-primary text-gray-900 px-3 py-2 rounded tooltip text-sm md:text-base md:px-4" data-tooltip="Transfer Now">Send</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Savings -->
+                    <div class="card glass p-3 md:p-4 rounded-lg">
+                        <form action="/saving" method="post" class="form-flex">
+                            <i class="fas fa-piggy-bank text-yellow-400 text-xl md:text-2xl"></i>
+                            <input type="number" name="amount" placeholder="Savings Amount" required class="px-3 py-2 rounded bg-transparent border border-gray-500 text-white focus:ring-2 focus:ring-green-400 text-sm md:text-base">
+                            <button type="submit" class="btn-primary text-gray-900 px-3 py-2 rounded tooltip text-sm md:text-base md:px-4" data-tooltip="Save Money">Save</button>
+                        </form>
+                    </div>
+
+                    <!-- Repay Loan -->
+                    <div class="card glass p-3 md:p-4 rounded-lg">
+                        <form action="/repay-loan" method="post" class="form-flex">
+                            <i class="fas fa-hand-holding-usd text-purple-400 text-xl md:text-2xl"></i>
+                            <input type="number" name="repay_amount" placeholder="Repay Loan Amount" required class="px-3 py-2 rounded bg-transparent border border-gray-500 text-white focus:ring-2 focus:ring-green-400 text-sm md:text-base">
+                            <button type="submit" class="btn-primary text-gray-900 px-3 py-2 rounded tooltip text-sm md:text-base md:px-4" data-tooltip="Pay Back">Repay</button>
+                        </form>
+                    </div>
+
+                    <!-- Buy Airtime -->
+                    <div class="card glass p-3 md:p-4 rounded-lg">
+                        <form action="/buy-airtime" method="post" class="form-flex">
+                            <i class="fas fa-phone text-orange-400 text-xl md:text-2xl"></i>
+                            <input type="number" name="amount" placeholder="Airtime Amount" required class="px-3 py-2 rounded bg-transparent border border-gray-500 text-white focus:ring-2 focus:ring-green-400 text-sm md:text-base">
+                            <button type="submit" class="btn-primary text-gray-900 px-3 py-2 rounded tooltip text-sm md:text-base md:px-4" data-tooltip="Top Up">Buy</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="mt-6 md:mt-10 flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6 pb-6">
+                    <a href="/loan" class="btn-primary text-gray-900 px-6 py-3 rounded-lg text-base md:text-lg font-bold shadow-lg hover:shadow-xl transition-all tooltip" data-tooltip="Get a Loan">
+                        <i class="fas fa-hand-holding-usd mr-2"></i>Request Loan
+                    </a>
+                    <a href="/view-loans" class="btn-primary text-gray-900 px-6 py-3 rounded-lg text-base md:text-lg font-bold shadow-lg hover:shadow-xl transition-all tooltip" data-tooltip="Loan History">
+                        <i class="fas fa-list-alt mr-2"></i>View Loans
+                    </a>
+                </div>
             </div>
-        </div>
-    </nav>
+        </main>
 
-    <div class="container max-w-2xl mx-auto mt-24 p-8 bg-gray-800 rounded-lg shadow-lg transform translate-x-10">
-        <h2 class="text-3xl font-bold mb-4">Insight Bank</h2>
-        <h3 class="text-xl mb-4">Acc/No: <span id="account-number">Loading...</span></h3>
-        <h3 class="text-xl mb-4">Bank Balance: <span id="balance">Loading...</span></h3>
-
-        <form action="/deposit" method="post" class="mb-4">
-            <input type="number" name="amount" placeholder="Deposit Amount" required
-                class="px-4 py-2 rounded bg-gray-700 border-none mr-2">
-            <button type="submit"
-                class="bg-green-500 text-gray-900 px-4 py-2 rounded hover:bg-green-400 transition-colors">Deposit</button>
-        </form>
-
-        <form action="/withdraw" method="post" class="mb-4">
-            <input type="number" name="amount" placeholder="Withdraw Amount" required
-                class="px-4 py-2 rounded bg-gray-700 border-none mr-2">
-            <button type="submit"
-                class="bg-green-500 text-gray-900 px-4 py-2 rounded hover:bg-green-400 transition-colors">Withdraw</button>
-        </form>
-
-        <form action="/send-money" method="post" class="mb-4">
-            <input type="text" name="recipient" placeholder="Recipient Username" required
-                class="px-4 py-2 rounded bg-gray-700 border-none mr-2">
-            <br><br>
-            <input type="number" name="amount" placeholder="Send Amount" required
-                class="px-4 py-2 rounded bg-gray-700 border-none mr-2">
-            <button type="submit"
-                class="bg-green-500 text-gray-900 px-4 py-2 rounded hover:bg-green-400 transition-colors">Send
-                Money</button>
-        </form>
-
-        <form action="/saving" method="post" class="mb-4">
-            <input type="number" name="amount" placeholder="Savings Amount" required
-                class="px-4 py-2 rounded bg-gray-700 border-none mr-2">
-            <button type="submit"
-                class="bg-green-500 text-gray-900 px-4 py-2 rounded hover:bg-green-400 transition-colors">Savings</button>
-        </form>
-
-        <form action="/repay-loan" method="post" class="mb-4">
-            <input type="number" name="repay_amount" placeholder="Repay Loan Amount" required
-                class="px-4 py-2 rounded bg-gray-700 border-none mr-2">
-            <button type="submit"
-                class="bg-green-500 text-gray-900 px-4 py-2 rounded hover:bg-green-400 transition-colors">Repay
-                Loan</button>
-        </form>
-
-        <form action="/buy-airtime" method="post" class="mb-4">
-            <input type="number" name="amount" placeholder="Airtime Amount" required
-                class="px-4 py-2 rounded bg-gray-700 border-none mr-2">
-            <button type="submit"
-                class="bg-green-500 text-gray-900 px-4 py-2 rounded hover:bg-green-400 transition-colors">Buy
-                Airtime</button>
-        </form>
-
-        <a href="/loan"
-            class="bg-green-500 text-gray-900 px-4 py-2 rounded hover:bg-green-400 transition-colors inline-block mb-2">Request
-            Loan</a>
-        <a href="/view-loans"
-            class="bg-green-500 text-gray-900 px-4 py-2 rounded hover:bg-green-400 transition-colors inline-block mb-2">View
-            Loans</a>
+        <!-- Footer -->
+        <footer class="glass text-gray-200 text-center py-4 w-full">
+            2025 <a href="https://github.com/benardopiyo/Bank-Management-System" class="text-green-400 hover:text-green-300 transition-colors">iLabs</a> | All Rights Reserved
+        </footer>
     </div>
 
-
-    <footer class="text-gray-200 text-center mt-6 fixed bottom-0 left-0 w-full bg-gray-900"> 2025 <a
-            href="https://github.com/benardopiyo/Bank-Management-System"
-            class="text-gray-200 hover:text-gray-100 transition-colors">iLabs</a> | All Rights Reserved</footer>
-
-
+    <!-- Script -->
     <script>
         function checkBalance() {
             fetch('/balance')
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById("balance").innerText = "KES " + data.balance;
+                    document.getElementById("balance").innerText = data.balance.toLocaleString();
                 })
                 .catch(error => console.error('Error:', error));
         }
-
-        function fetchAccountNumber() {
-            fetch('/account-number') // New endpoint
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById("account-number").innerText = data.accountNumber;
-                })
-                .catch(error => console.error('Error:', error));
-        }
-        fetchAccountNumber();
         checkBalance();
+        setInterval(checkBalance, 30000); // Refresh every 30 seconds
+
+        // Add entrance animation delay to cards
+        document.querySelectorAll('.card').forEach((card, index) => {
+            card.style.animationDelay = `${index * 0.1}s`;
+        });
     </script>
-
 </body>
-
 </html>

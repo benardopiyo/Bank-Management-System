@@ -38,65 +38,6 @@ func RepayLoan(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// // Get user's deposit balance
-	// var depositBalance int
-	// err = config.DB.QueryRow("SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE user_id=? AND type='deposit'", userID).Scan(&depositBalance)
-	// if err != nil {
-	// 	ErrorPage(w, r, http.StatusInternalServerError, "Failed to fetch balance")
-	// 	return
-	// }
-
-	// // Get user's outstanding loan balance
-	// var loanBalance int
-	// err = config.DB.QueryRow("SELECT COALESCE(SUM(amount), 0) FROM loans WHERE user_id=? AND status='pending'", userID).Scan(&loanBalance)
-	// if err != nil {
-	// 	ErrorPage(w, r, http.StatusInternalServerError, "Failed to fetch loan balance")
-	// 	return
-	// }
-
-	// if loanBalance <= 0 {
-	// 	ErrorPage(w, r, http.StatusBadRequest, "No outstanding loan balance")
-	// 	return
-	// }
-
-	// tx, err := config.DB.Begin()
-	// if err != nil {
-	// 	ErrorPage(w, r, http.StatusInternalServerError, "Failed to start transaction")
-	// 	return
-	// }
-
-	// // Deduct from deposit if available
-	// if depositBalance >= repaymentAmount {
-	// 	_, err = tx.Exec("INSERT INTO transactions (user_id, type, amount) VALUES (?, 'repayment', ?)", userID, -repaymentAmount)
-	// 	if err != nil {
-	// 		tx.Rollback()
-	// 		ErrorPage(w, r, http.StatusInternalServerError, "Failed to process repayment")
-	// 		return
-	// 	}
-
-	// 	// Update deposit balance after repayment
-	// 	_, err = tx.Exec("UPDATE transactions SET amount = amount - ? WHERE user_id=? AND type='deposit'", repaymentAmount, userID)
-	// 	if err != nil {
-	// 		tx.Rollback()
-	// 		ErrorPage(w, r, http.StatusInternalServerError, "Failed to update deposit balance")
-	// 		return
-	// 	}
-	// } else {
-	// 	ErrorPage(w, r, http.StatusBadRequest, "Insufficient deposit balance")
-	// 	tx.Rollback()
-	// 	return
-	// }
-
-	// // Reduce the loan balance
-	// _, err = tx.Exec("UPDATE loans SET amount = amount - ? WHERE user_id=? AND status='pending'", repaymentAmount, userID)
-	// if err != nil {
-	// 	tx.Rollback()
-	// 	ErrorPage(w, r, http.StatusInternalServerError, "Failed to update loan balance")
-	// 	return
-	// }
-
-	// tx.Commit()
-
 	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 }
 

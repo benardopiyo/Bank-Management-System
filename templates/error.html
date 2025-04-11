@@ -3,25 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Insight</title>
+    <title>Error - Insight Bank</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Dynamic Background */
+        body {
+            background: linear-gradient(-45deg, #1f2937, #374151, #111827, #1f2937);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #e5e7eb; /* Gray-200 */
+            font-family: 'Open Sans', sans-serif; /* Body text */
+        }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Glassmorphism */
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Button Styles */
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981, #059669);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+            min-width: 80px;
+            white-space: nowrap;
+            color: #1f2937; /* Gray-900 */
+            font-family: 'Roboto Slab', serif; /* Button text */
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.7);
+        }
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .btn-primary:hover::after {
+            opacity: 1;
+        }
+
+        /* Typography */
+        h1, h2, .nav-title {
+            font-family: 'Roboto Slab', serif; /* Headings */
+            color: #10b981; /* Green for professionalism */
+            font-weight: 700;
+        }
+        p, a {
+            font-family: 'Open Sans', sans-serif; /* Body text */
+        }
+
+        /* Responsive Layout */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        .page-wrapper {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .content-wrapper {
+            flex: 1 0 auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 6rem 1rem 4rem 1rem; /* Increased padding to avoid overlap */
+        }
+        footer {
+            flex-shrink: 0;
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+        }
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+        .tooltip:hover::after {
+            opacity: 1;
+        }
+    </style>
 </head>
-<body class="bg-gray-900 text-gray-200 min-h-screen flex flex-col justify-center items-center">
+<body>
+    <div class="page-wrapper">
+        <!-- Header -->
+        <header class="glass w-full fixed top-0 z-50 px-4 py-3 shadow-lg">
+            <div class="text-center">
+                <a href="/" class="nav-title text-xl md:text-2xl font-bold text-green-400 hover:text-green-300 transition-colors">
+                    Insight Bank
+                </a>
+            </div>
+        </header>
 
-<header class="mb-6">
-    <div class="text-center">
-        <a href="/" class="text-4xl font-bold text-green-500 hover:text-green-400 transition-colors">Insight Bank</a>
+        <!-- Main Content -->
+        <main class="content-wrapper">
+            <div class="glass rounded-xl shadow-xl p-8 md:p-10 text-center space-y-8 max-w-md">
+                <h1 class="text-4xl md:text-6xl font-bold">Sorry!</h1>
+                <p class="text-2xl md:text-3xl text-gray-300">{{.StatusCode}}</p>
+                <p class="text-lg md:text-xl text-gray-300">{{ .Message}}</p>
+                <a href="/" class="btn-primary px-6 py-3 rounded-lg text-base md:text-lg font-bold shadow-lg hover:shadow-xl transition-all tooltip inline-block" data-tooltip="Return to Home">
+                    Home
+                </a>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="glass text-gray-200 text-center py-4 w-full">
+            2025 <a href="https://github.com/benardopiyo/Bank-Management-System" class="text-green-400 hover:text-green-300 transition-colors">iLabs</a> | All Rights Reserved
+        </footer>
     </div>
-</header>
-
-<div class="text-center">
-    <h1 class="text-6xl font-bold mb-4">Oops!</h1>
-    <p class="text-3xl mb-2">{{.StatusCode}}</p>
-    <p class="text-xl mb-6">{{ .Message}}</p>
-    <a href="/" class="bg-green-500 text-gray-900 px-6 py-3 rounded-full hover:bg-green-400 transition-colors">Home</a>
-</div>
-
-<footer class="text-gray-200 text-center mt-12"> 2025 <a href="https://github.com/benardopiyo/Bank-Management-System" class="text-gray-200 hover:text-gray-100 transition-colors">iLabs</a> | All Rights Reserved</footer>
-
 </body>
 </html>

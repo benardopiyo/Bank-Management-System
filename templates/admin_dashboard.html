@@ -5,67 +5,261 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Insight</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Dynamic Background */
+        body {
+            background: linear-gradient(-45deg, #1f2937, #374151, #111827, #1f2937);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Glassmorphism */
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Button Styles */
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981, #059669);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+            min-width: 80px;
+            white-space: nowrap;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.7);
+        }
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .btn-primary:hover::after {
+            opacity: 1;
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #b91c1c);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+            min-width: 80px;
+            white-space: nowrap;
+        }
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #b91c1c, #991b1b);
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.7);
+        }
+        .btn-danger::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .btn-danger:hover::after {
+            opacity: 1;
+        }
+
+        /* Typography */
+        h1, h2, .nav-title {
+            font-family: 'Roboto Slab', serif;
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+        }
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+        .tooltip:hover::after {
+            opacity: 1;
+        }
+
+        /* Responsive Layout */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        .page-wrapper {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .content-wrapper {
+            flex: 1 0 auto;
+            overflow-y: auto;
+            padding: 5rem 1rem 3rem 1rem;
+        }
+        .container {
+            max-width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 1rem;
+            overflow: hidden; /* Clip shadows within container */
+            position: relative;
+        }
+        @media (min-width: 640px) { .container { max-width: 640px; } }
+        @media (min-width: 768px) { .container { max-width: 768px; } }
+        @media (min-width: 1024px) { .container { max-width: 1024px; } } /* Slightly larger than view_loans */
+        footer {
+            flex-shrink: 0;
+        }
+
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem; /* sm: 14px */
+        }
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        th {
+            background: rgba(16, 185, 129, 0.2); /* Green-tinted header */
+            color: #fff;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.875rem; /* sm: 14px */
+            letter-spacing: 0.05em;
+        }
+        tr {
+            background: rgba(255, 255, 255, 0.05);
+            color: #e5e7eb; /* Gray-200 */
+        }
+        tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        tr:hover {
+            background: rgba(16, 185, 129, 0.1);
+            transition: background 0.3s;
+        }
+        @media (min-width: 768px) {
+            table {
+                font-size: 1rem; /* base: 16px */
+            }
+            th {
+                font-size: 1rem; /* base: 16px */
+            }
+        }
+    </style>
 </head>
-<body class="bg-gray-900 text-gray-200 min-h-screen">
-    <nav class="bg-gray-800 fixed w-full top-0 z-50 px-16 py-4 shadow-lg">
-        <div class="flex justify-between items-center">
-            <div>
-                <button onclick="window.history.back()" class="bg-green-500 text-gray-900 px-4 py-2 rounded hover:bg-green-400 transition-colors ml-16">Back</button>
-            </div>
-            <div class="flex items-center">
-                <a href="/" class="text-4xl font-bold text-green-500 hover:text-green-400 transition-colors">
-                    <span class="text-xl">Insight Bank - Admin</span>
+<body>
+    <div class="page-wrapper">
+        <!-- Navigation -->
+        <nav class="glass fixed w-full top-0 z-50 px-4 py-3 shadow-lg">
+            <div class="flex justify-between items-center max-w-7xl mx-auto">
+                <button onclick="window.history.back()" class="btn-primary text-gray-900 px-3 py-2 rounded tooltip text-sm md:text-base md:px-4" data-tooltip="Go Back">
+                    <i class="fas fa-arrow-left mr-1 md:mr-2"></i>Back
+                </button>
+                <a href="/" class="nav-title text-xl md:text-2xl font-bold text-green-400 hover:text-green-300 transition-colors">
+                    Insight Bank - Admin
+                </a>
+                <a href="/logout" class="btn-primary text-gray-900 px-4 py-2 rounded-full tooltip text-sm md:text-base md:px-6" data-tooltip="Sign Out">
+                    <i class="fas fa-sign-out-alt mr-1 md:mr-2"></i>Logout
                 </a>
             </div>
-            <div>
-                <a href="/logout" class="bg-green-500 text-gray-900 px-6 py-2 rounded-full hover:bg-green-400 transition-colors">Logout</a>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="content-wrapper">
+            <div class="container glass rounded-xl shadow-xl">
+                <div class="p-4 md:p-6">
+                    <h2 class="text-2xl md:text-3xl font-bold text-green-400 mb-6">Pending User Approvals</h2>
+                    <div class="overflow-x-auto">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th class="px-4 py-2">Name</th>
+                                    <th class="px-4 py-2">Username</th>
+                                    <th class="px-4 py-2">Account Number</th>
+                                    <th class="px-4 py-2">Branch</th>
+                                    <th class="px-4 py-2">Documents</th>
+                                    <th class="px-4 py-2">Auto Verification</th>
+                                    <th class="px-4 py-2">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{range .}}
+                                <tr>
+                                    <td class="px-4 py-2">{{.Name}}</td>
+                                    <td class="px-4 py-2">{{.Username}}</td>
+                                    <td class="px-4 py-2">{{.AccountNumber}}</td>
+                                    <td class="px-4 py-2">{{.Branch}}</td>
+                                    <td class="px-4 py-2">
+                                        <a href="/{{.PhotoPath}}" target="_blank" class="text-green-400 hover:text-green-300 transition-colors">Photo</a> |
+                                        <a href="/{{.IDPath}}" target="_blank" class="text-green-400 hover:text-green-300 transition-colors">ID</a>
+                                    </td>
+                                    <td class="px-4 py-2">{{.AutoVerificationStatus}}</td>
+                                    <td class="px-4 py-2 flex space-x-2">
+                                        <form action="/approve-user" method="post" class="inline">
+                                            <input type="hidden" name="user_id" value="{{.UserID}}">
+                                            <button type="submit" name="action" value="approve" class="btn-primary text-gray-900 px-2 py-1 rounded text-sm md:text-base tooltip" data-tooltip="Approve User">Approve</button>
+                                            <button type="submit" name="action" value="reject" class="btn-danger text-gray-900 px-2 py-1 rounded text-sm md:text-base tooltip" data-tooltip="Reject User">Reject</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {{else}}
+                                <tr>
+                                    <td colspan="7" class="px-4 py-2 text-center">No pending users.</td>
+                                </tr>
+                                {{end}}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-        </div>
-    </nav>
+        </main>
 
-    <div class="container max-w-4xl mx-auto mt-24 p-8 bg-gray-800 rounded-lg shadow-lg">
-        <h2 class="text-3xl font-bold mb-6">Pending User Approvals</h2>
-        <table class="w-full text-left">
-            <thead class="bg-gray-700">
-                <tr>
-                    <th class="px-4 py-2">Name</th>
-                    <th class="px-4 py-2">Username</th>
-                    <th class="px-4 py-2">Account Number</th>
-                    <th class="px-4 py-2">Branch</th>
-                    <th class="px-4 py-2">Documents</th>
-                    <th class="px-4 py-2">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{range .}}
-                <tr class="border-b border-gray-700">
-                    <td class="px-4 py-2">{{.Name}}</td>
-                    <td class="px-4 py-2">{{.Username}}</td>
-                    <td class="px-4 py-2">{{.AccountNumber}}</td>
-                    <td class="px-4 py-2">{{.Branch}}</td>
-                    <td class="px-4 py-2">
-                        <a href="/{{.PhotoPath}}" target="_blank" class="text-green-500 hover:underline">Photo</a> |
-                        <a href="/{{.IDPath}}" target="_blank" class="text-green-500 hover:underline">ID</a>
-                    </td>
-                    <td class="px-4 py-2">
-                        <form action="/approve-user" method="post" class="inline">
-                            <input type="hidden" name="user_id" value="{{.UserID}}">
-                            <button type="submit" name="action" value="approve" class="bg-green-500 text-gray-900 px-2 py-1 rounded hover:bg-green-400">Approve</button>
-                            <button type="submit" name="action" value="reject" class="bg-red-500 text-gray-900 px-2 py-1 rounded hover:bg-red-400">Reject</button>
-                        </form>
-                    </td>
-                </tr>
-                {{else}}
-                <tr>
-                    <td colspan="6" class="px-4 py-2 text-center">No pending users.</td>
-                </tr>
-                {{end}}
-            </tbody>
-        </table>
+        <!-- Footer -->
+        <footer class="glass text-gray-200 text-center py-4 w-full">
+            2025 <a href="https://github.com/benardopiyo/Bank-Management-System" class="text-green-400 hover:text-green-300 transition-colors">iLabs</a> | All Rights Reserved
+        </footer>
     </div>
-
-    <footer class="text-gray-200 text-center mt-6 fixed bottom-0 left-0 w-full bg-gray-900">
-        2025 <a href="https://github.com/benardopiyo/Bank-Management-System" class="text-gray-200 hover:text-gray-100 transition-colors">iLabs</a> | All Rights Reserved
-    </footer>
 </body>
 </html>
