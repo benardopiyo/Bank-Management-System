@@ -20,6 +20,7 @@ func CreateTables() {
 		verification_status TEXT DEFAULT 'pending',
 		auto_verification_status TEXT DEFAULT 'pending',
 		role TEXT DEFAULT 'user',
+		currency TEXT NOT NULL DEFAULT 'KES', -- New column for currency
 		created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 	);`
 
@@ -28,6 +29,9 @@ func CreateTables() {
 		user_id TEXT NOT NULL,
 		type TEXT NOT NULL,
 		amount INTEGER NOT NULL,
+		currency TEXT NOT NULL DEFAULT 'KES', -- New column for transaction currency
+		exchange_rate FLOAT, -- New column for exchange rate (relative to KES)
+		created_at DATETIME DEFAULT CURRENT_TIMESTAMP, -- Added for transaction timing
 		FOREIGN KEY(user_id) REFERENCES users(user_id)
 	);`
 
@@ -43,14 +47,14 @@ func CreateTables() {
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		user_id TEXT NOT NULL,
 		loan_id TEXT NOT NULL UNIQUE,
-		loan_type TEXT NOT NULL,              -- e.g., personal, mortgage, commercial
+		loan_type TEXT NOT NULL,
 		amount INTEGER NOT NULL,
 		interest_rate FLOAT NOT NULL,
-		repayment_period INTEGER NOT NULL,    -- In months
-		status TEXT NOT NULL DEFAULT 'pending', -- pending, approved, rejected, disbursed
-		id_path TEXT,                         -- Uploaded ID document
-		loan_form_path TEXT,                  -- Uploaded loan form
-		approved_by TEXT,                     -- Admin user_id who approved
+		repayment_period INTEGER NOT NULL,
+		status TEXT NOT NULL DEFAULT 'pending',
+		id_path TEXT,
+		loan_form_path TEXT,
+		approved_by TEXT,
 		approved_at DATETIME,
 		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 		FOREIGN KEY(user_id) REFERENCES users(user_id)
@@ -63,7 +67,7 @@ func CreateTables() {
 		due_date DATETIME NOT NULL,
 		paid_amount INTEGER DEFAULT 0,
 		paid_at DATETIME,
-		status TEXT NOT NULL DEFAULT 'pending', -- pending, paid, overdue
+		status TEXT NOT NULL DEFAULT 'pending',
 		FOREIGN KEY(loan_id) REFERENCES loans(loan_id)
 	);`
 

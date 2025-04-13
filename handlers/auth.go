@@ -219,8 +219,8 @@ func Register(w http.ResponseWriter, r *http.Request) {
 
 	userID := uuid.New().String()
 	stmt, err := config.DB.Prepare(`
-		INSERT INTO users (user_id, name, user_name, user_pin, confirm_pin, account_number, branch, photo_path, id_path, verification_status, auto_verification_status, created_at) 
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, CURRENT_TIMESTAMP)`)
+        INSERT INTO users (user_id, name, user_name, user_pin, confirm_pin, account_number, branch, photo_path, id_path, verification_status, auto_verification_status, currency, created_at) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, 'KES', CURRENT_TIMESTAMP)`)
 	if err != nil {
 		http.Error(w, "Database error", http.StatusInternalServerError)
 		return

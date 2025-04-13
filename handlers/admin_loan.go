@@ -35,7 +35,7 @@ func AdminLoanDashboard(w http.ResponseWriter, r *http.Request) {
 		RepaymentPeriod int
 		IDPath          string
 		LoanFormPath    string
-		Username        string // Moved to match query order
+		Username        string
 	}
 
 	var pendingLoans []PendingLoan

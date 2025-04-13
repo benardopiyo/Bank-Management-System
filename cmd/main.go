@@ -18,6 +18,6 @@ func main() {
 	config.InitDB()
 	router := routes.Routes()
 
-	fmt.Println("Server running on http://localhost:9090")
-	log.Fatal(http.ListenAndServe(":9090", router))
+	fmt.Println("Server running on http://localhost:9000")
+	log.Fatal(http.ListenAndServe(":9000", router))
 }
