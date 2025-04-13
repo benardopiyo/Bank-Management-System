@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: bank-management-system
+    env: go
+    plan: free
+    buildCommand: go build -o Bank-Management-System ./cmd
+    startCommand: ./Bank-Management-System
+    envVars:
+      - key: FACEPLUSPLUS_API_KEY
+        sync: false
+      - key: FACEPLUSPLUS_API_SECRET
+        sync: false
+      - key: EXCHANGERATE_API_KEY
+        sync: false
+      - key: ADMIN_PIN
+        sync: false
+    disks:
+      - name: sqlite-data
+        mountPath: /app/data
+        sizeGB: 1

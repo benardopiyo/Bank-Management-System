@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Insight Bank</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Dynamic Background */
+        body {
+            background: linear-gradient(-45deg, #1f2937, #374151, #111827, #1f2937);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #e5e7eb; /* Gray-200 */
+            font-family: 'Open Sans', sans-serif; /* Body text */
+        }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Glassmorphism */
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Button Styles */
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981, #059669);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+            min-width: 80px;
+            white-space: nowrap;
+            color: #1f2937; /* Gray-900 */
+            font-family: 'Roboto Slab', serif; /* Button text */
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.7);
+        }
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .btn-primary:hover::after {
+            opacity: 1;
+        }
+
+        /* Typography */
+        h1, h2, .nav-title {
+            font-family: 'Roboto Slab', serif; /* Headings */
+            color: #10b981; /* Green for professionalism */
+            font-weight: 700;
+        }
+        p, label, input, a {
+            font-family: 'Open Sans', sans-serif; /* Body text */
+        }
+
+        /* Responsive Layout */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        .page-wrapper {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .content-wrapper {
+            flex: 1 0 auto;
+            overflow-y: auto;
+            padding: 5rem 1rem 3rem 1rem;
+        }
+        .container {
+            max-width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 1rem;
+            overflow: hidden; /* Clip shadows */
+            position: relative;
+        }
+        @media (min-width: 640px) { .container { max-width: 640px; } } /* Compact form size */
+        footer {
+            flex-shrink: 0;
+        }
+
+        /* Form Inputs */
+        .form-input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #6b7280; /* Gray-500 */
+            color: #e5e7eb; /* Gray-200 */
+            outline: none;
+            transition: all 0.3s;
+            font-family: 'Open Sans', sans-serif;
+        }
+        .form-input:focus {
+            border-color: #10b981; /* Green-500 */
+            box-shadow: 0 0 5px rgba(16, 185, 129, 0.5);
+        }
+        .form-input::placeholder {
+            color: #9ca3af; /* Gray-400 */
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+        }
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+        .tooltip:hover::after {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-wrapper">
+        <!-- Navigation -->
+        <nav class="glass fixed w-full top-0 z-50 px-4 py-3 shadow-lg">
+            <div class="flex justify-between items-center max-w-7xl mx-auto">
+                <button onclick="window.history.back()" class="btn-primary px-3 py-2 rounded text-sm md:text-base md:px-4 tooltip" data-tooltip="Go Back">
+                    <i class="fas fa-arrow-left mr-1 md:mr-2"></i>Back
+                </button>
+                <a href="/" class="nav-title text-xl md:text-2xl font-bold text-green-400 hover:text-green-300 transition-colors">
+                    Insight Bank
+                </a>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="content-wrapper">
+            <div class="container glass rounded-xl shadow-xl">
+                <form method="POST" action="/login" class="p-4 md:p-6 space-y-6">
+                    <h2 class="text-2xl md:text-3xl font-bold mb-4">Login</h2>
+                    <div>
+                        <label class="block mb-1 text-gray-200 text-sm md:text-base">Username</label>
+                        <input type="text" name="user-name" placeholder="Enter your username" required class="form-input w-full px-4 py-2 rounded text-sm md:text-base">
+                    </div>
+                    <div>
+                        <label class="block mb-1 text-gray-200 text-sm md:text-base">Pin</label>
+                        <input type="password" name="pin" placeholder="Enter your pin" required class="form-input w-full px-4 py-2 rounded text-sm md:text-base">
+                    </div>
+                    <div class="flex justify-center">
+                        <button type="submit" class="btn-primary px-6 py-3 rounded-lg text-base md:text-lg font-bold shadow-lg hover:shadow-xl transition-all tooltip" data-tooltip="Sign In">
+                            Login
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="glass text-gray-200 text-center py-4 w-full">
+            2025 <a href="https://github.com/benardopiyo/Bank-Management-System" class="text-green-400 hover:text-green-300 transition-colors">iLabs</a> | All Rights Reserved
+        </footer>
+    </div>
+</body>
+</html>
