@@ -3,7 +3,7 @@ services:
     name: bank-management-system
     env: go
     plan: free
-    buildCommand: go build -o Bank-Management-System
+    buildCommand: go build -o Bank-Management-System ./cmd
     startCommand: ./Bank-Management-System
     envVars:
       - key: FACEPLUSPLUS_API_KEY
