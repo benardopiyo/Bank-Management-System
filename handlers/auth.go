@@ -47,8 +47,6 @@ var branchCodes = map[string]string{
 
 // Face++ API credentials and endpoints
 const (
-	facePlusPlusAPIKey     = "dX54O0lbt6ViV3q17fYdmDUXFbVSuf_V"
-	facePlusPlusAPISecret  = "OtqRgnOLTk8jX90oALcuFPSwVMus6BPt"
 	facePlusPlusCompareURL = "https://api-us.faceplusplus.com/facepp/v3/compare"
 	facePlusPlusOCRURL     = "https://api-us.faceplusplus.com/facepp/v3/ocr/idcard"
 )
@@ -95,6 +93,13 @@ func RegisterPage(w http.ResponseWriter, r *http.Request) {
 
 // Register User with Face++ Verification and ID Authenticity
 func Register(w http.ResponseWriter, r *http.Request) {
+	facePlusPlusAPIKey := os.Getenv("FACEPLUSPLUS_API_KEY")
+	facePlusPlusAPISecret := os.Getenv("FACEPLUSPLUS_API_SECRET")
+	if facePlusPlusAPIKey == "" || facePlusPlusAPISecret == "" {
+		ErrorPage(w, r, http.StatusInternalServerError, "API credentials not configured")
+		return
+	}
+
 	if r.Method != http.MethodPost {
 		http.Redirect(w, r, "/register", http.StatusSeeOther)
 		return

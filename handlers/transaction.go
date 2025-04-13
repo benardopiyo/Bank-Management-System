@@ -17,11 +17,6 @@ import (
 	"github.com/signintech/gopdf"
 )
 
-const (
-	exchangeRateAPIKey = "c924d207c754d157d47665a7" // ExchangeRate-API key
-	exchangeRateURL    = "https://v6.exchangerate-api.com/v6/" + exchangeRateAPIKey + "/latest/"
-)
-
 // ExchangeRateResponse defines the structure of the ExchangeRate-API response
 type ExchangeRateResponse struct {
 	Result          string             `json:"result"`
@@ -404,8 +399,14 @@ func Balance(w http.ResponseWriter, r *http.Request) {
 
 // getExchangeRate fetches the exchange rate from source to target currency
 func getExchangeRate(source, target string) (float64, error) {
+	apiKey := os.Getenv("EXCHANGERATE_API_KEY")
+	if apiKey == "" {
+		return 0, fmt.Errorf("ExchangeRate-API key not configured")
+	}
+	exchangeRateURL := fmt.Sprintf("https://v6.exchangerate-api.com/v6/%s/latest/%s", apiKey, source)
 	client := resty.New()
-	resp, err := client.R().Get(exchangeRateURL + source)
+	resp, err := client.R().Get(exchangeRateURL)
+
 	if err != nil {
 		return 0, fmt.Errorf("failed to fetch exchange rates: %v", err)
 	}
